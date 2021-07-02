@@ -27,4 +27,14 @@
   <link rel="alternate" type="application/rss+xml" title="RSS" href="{{ site.feed.path | default: 'feed.xml' | relative_url }}" />
 
   {% include custom-head.html %}
+  
+  <script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
+  <script type="text/javascript">
+  if(!wcs_add) var wcs_add = {};
+  wcs_add["wa"] = "45304ae7157838";
+  if(window.wcs) {
+    wcs_do();
+  }
+  </script>
+  
 </head>
