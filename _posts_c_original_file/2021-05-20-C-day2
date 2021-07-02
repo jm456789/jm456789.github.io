@@ -1,0 +1,325 @@
+---
+layout: post
+
+title: "C-Day2 2021-05-20. "
+excerpt: "라이브러리, 전처리기(define), putchar, putc, printf, 실수와 정수 숫자를 표현하는 방식, 출력 문자열 정렬, 제어코드, 대입·산술·증감·관계·논리 연산자, 제어문(if, 3항, if else, switch )"
+
+categories:
+  - C
+tags:
+  - [C]
+  
+toc: true
+toc_sticky: true
+ 
+date: 2021-05-25
+last_modified_at: 2021-05-25
+---
+
+# 06. 표준 출력 함수
+
+### 라이브러리
+
+* 소스파일이 아닌 목적파일을 공유. 잘못된 수정을 막기 위해
+* 만들어져있는걸 그냥 가져다 쓴다고 생각하면 된다.
+* 사용할 때 헤더파일 필요하다. ex) int Add(int value1, value2);
+
+---
+
+### 전처리기
+* 같은 작업 경로(같은 폴더)에 헤더 파일이 있다면 -> #include "MyMath.h"
+* 경로가 다르다면(같은 폴더 내에 없다면) 전체경로를 써줘야 한다. -> #include "C:\\download\MyMath.h"
+
+|  #include <헤더 파일 이름> | #include "헤더파일이름"  |
+|---|---|
+|  비주얼 스튜디오에서 제공하는 헤더파일 포함 | 프로그래머가 정의해 사용하는 헤더 파일 포함  |
+
+
+##### define 전처리기
+> 상수나 명령문을 치환하는 문법이다.    
+> ex) #define MAX_COUNT 3      
+> ex) #define POW_VALUE(a) (a*a)       
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int data = POW_VALUE(3); //이렇게 명령을 치환해서 사용하는 것이 함수를 호출하는 것과 유사하기 때문에 POW_VALUE를 <u>매크로함수</u>라고 한다.
+
+---
+
+### C 표준 라이브러리와 표준 출력 함수
+
+##### 단일 문자 출력 함수 putchar, putc (한글자 출력)
+* putchar 함수에 ''(작은따옴표)를 사용해 문자 상수로 지정하면, 컴파일러가 번역할 때 알아서 해당 문자의 아스키 값으로 변환해준다.    
+그리고 1바이트 기준 출력이기때문에 한글자에 2바이트인 <u>한글은 출력할 수 없다.</u>   
+* putc는 여러가지 형식을 출력할 수 있는 함수인데, 두번째 매개변수에 표준출력을 의미하는 stdout값을 같이 써야 한다. 매번 stdout을 사용하려면 번거롭기 떄문에 좀 더 편하게 사용할 수 있도록 매크로함수인 putchar를 만들어 놓은것.    
+ex) putc('A', stdout);
+* puts는 ""(큰따옴표)를 사용하여 문구 출력 가능.   
+ex) puts("Hi~");
+
+---
+
+##### printf 함수를 사용하는 방법
+
+| 키워드  | %d  |  %f | %c  |  %s | %u  | %o  | %x  | %%  |
+|:---:      |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:--- : |
+| 출력 형식  | 정수<10진수>  | 실수  | 문자  | 문자열  | unsined 정수 <10진수>  | 8진수  |  16진수 | %  |
+
+```c++
+void main(){
+
+    char data = 65;
+    printf("%c 의 ASCII 값은 %d 입니다.", data, data);
+
+    //출력 -> A의 ASCII 값은 65 입니다.
+}
+```
+
+---
+
+##### 실수와 정수는 숫자를 표현하는 방식이 다르다
+```c++
+void main(){
+
+    float value = 2.1f;
+    printf("%f", value);
+
+    //출력 -> 2.100000
+}
+
+```
+
+* C언어는 기본적으로 double 자료형으로 처리한다. 따라서 float자료형으로 변수를 선언하면 경고가 발생하기 때문에 f를 같이 써줘야 한다.   
+* float < double
+
+---
+
+##### 출력 문자열 정렬하기
+
+```c++
+voind main(){
+
+    int data = 7;
+    printf("[%d], [%5d], [%05d], [%-5d]", dat, data, data, data);
+
+    //출력 -> [7], [    7], [00007], [7    ] 
+}
+```
+
+단, 출력할 때 <u>.(마침표)도 출력 칸 수에 포함</u>되기때문에 전체 자리수를 명시할 때 칸 수를 잘 계산해야 한다.
+```c++
+void main(){
+
+    double data = 3.141592;
+    printf("[%f], [%.4f], [%8.4f], [%08.4f]", data, data, data, data, data);
+
+    // 출력 -> [3.141592], [3.1416], [  3.1416], [003.1416]
+
+}
+```
+
+---
+
+##### 제어 코드 사용하기
+
+| 제어코드  | 기능  |
+|---        |---    |
+| \n  | 캐럿을 다음 줄로 이동\(Line Feed\). 개행  |
+| \r  | 캐럿을 해당 줄의 처음으로 이동\(Carriage Return\)  |
+| \t  | 캐럿을 한 탭만큼 이동  |
+| \b  | 캐럿을 바로 앞 칸으로 이동  |
+| \a  | 시스템 스피커로 경고음 발생\(모든 컴퓨터에서 이루어지는것이 아님\)  |
+| \"  | 큰 따옴표 출력  |
+| \'  | 작은 따옴표 출력  |
+
+<br />
+
+# 07. 연산자
+
+### 기본 연산자
+
+##### 대입 연산자
+* x = 3 -> x에 3을 대입한다는 뜻. 같다는 뜻이 아님
+
+---
+
+##### 산술 연산자
+```c++
+void main(){
+
+    int data1 = 5, data2 = 3;
+
+    int result1 = data1 + data2; //덧셈
+    int result2 = data1 * data2; //곱셈
+    int result3 = data1 / data2; //나눗셈(몫)
+    int result4 = data1 % data2; //나눗셈(나머지)
+}
+```
+
+---
+
+##### 증감연산자
+
+| 덧셈 연산자\(이항 연산자\)  | 증가 연산자\(단항 연산자\)  | 증감연산자 전위형  | 증감연산자 후위형  |
+|---|---|---|---|
+|  int i = 5;          <br />       i = i + 1;        <br />     //i값에 1을 더하고 다시 i에 대입  | int i = 5;          <br />       i++;         <br />        //i값을 1 증가시킴. i에 6이 대입됨  |  int i = 5          <br />        int sum = ++i;          <br />        //자신의 값을 먼저 <u>증가</u>시켜 6을 만든 뒤 sum에 6을 <u>대입</u>함. i, sum 모두 6이 됨. | int i = 5, sum;         <br />         sum = i++;          <br />           //i의 값 5를 sum에 먼저 <u>대입</u>하고 i를 <u>증가</u>시킴. i는 6이고 sum은 5가 됨.  |
+
+변수(i, a 등)에 증감되고 숫자는 안된다! ex) ++3 or 3++ 안됌.
+
+---
+
+##### 관계 연산자
+
+* 산술연산의 결과 값은 숫자로 나오지만, 관계 연산이나 논리연산의 결과 값은 진릿값(참, 거짓)으로 나온다.
+* = 은 대입 연산자이고 ==은 관계 연산자이다.
+* ex) A > B, A == B, A != B(A와 B가 같지 않으면 참) 등...
+```c++
+void main(){
+
+    int data1 = 5, data2 = 3;
+
+    int result1 = data1 > 7; //거짓
+    int result2 = data2 != data1; //3은 5와 같지 않으니 참
+
+    /* 관계 연산의 결과 값은 0 또는 1이다 */
+    printf("%d, %d", result1, result2);
+    // 결과 -> 0, 1
+}
+```
+
+##### 논리 연산자
+
+|  A | B  | A && B<br />(AND 논리곱)  | A ㅣㅣ B<br />(OR 논리합)  | !A  |
+|:---:|:---:|:---:|:---:|:---:|
+| 0  | 0  | 0  |  0 | 1  |
+| 0  | 1  | 0  | 1  | 1  |
+| 1  | 0  | 0  |  1 | 0  |
+| 1  | 1  | 1  | 1  | 0  |
+
+```c++
+void main(){
+
+    int data1 = 5, data2 = 3;
+
+    int result1 = 0 || 1;
+    int result2 = 3 && -1;
+    int result3 = data1 == 3 || data2 == 3;
+    int result4 = data1 == 3 && data2 == 3;
+    int result5 = !data1;
+
+    printf("%d, %d, %d, %d, %d, ", result1, result2, result3, result4, result5);
+
+    //결과 -> 1, 1, 1, 0, 0
+    //0이 아니면 다 참(1)으로 인지!!!!!!!!!
+
+}
+```
+
+# 08. 조건문
+
+### 제어문 (=조건문)
+> 제어문은 프로그램의 실행 흐름을 제어하는 문법이다.
+
+---
+
+##### if문
+* if(data = 3){} -> 대입연산자 잘못 사용
+* if(data == 3){} -> 올바름
+* 위의 실수를 줄이기 위해 if(3 == data){}로 사용할 수 있음. 실수로 if(3 = data){} 이렇게 사용해도 값(상수)에 값을 넣을 수 없어 오류가 발생하여 거를 수 있다.
+
+```c++
+void main(){
+
+    int score = 92;
+    char grade;
+
+    if(score >= 90){
+        grade = 'A';
+        printf("점수는 %d이고 등급은 %c입니다.\n", score, grade);
+    }else{
+        grade = 'B';
+        printf("점수는 %d이고 등급은 %c입니다.\n", score, grade);
+    }
+    printf("작업종료");
+
+    //결과 -> 점수는 92이고 등급은 A 입니다.
+    //        작업종료
+}
+```
+
+---
+
+##### 조건 수식 연산자(3항 연산자?) : 간단한 if문을 쓸 때 사용한다.
+
+> 결과 값 = (조건 수식)?수식1(참일 때 실행해 결과 값에 저장) : 수식2(거짓일 때 실행해 결과 값에 저장);
+
+```c++
+point = (value >= 10000) ? value * 0.1 : value * 0.5;
+```
+
+```c++
+if(data > 5){
+    return 1;
+}else{
+    return 0;
+}
+
+//삼항으로 변환
+return (data > 5) ? 1 : 0;
+```
+
+---
+
+##### if else문
+```c++
+void main(){
+
+    int score = 86;
+    char grade;
+
+    if(score >= 90){
+        grade = 'A';
+    }else if(score >= 80){
+        grade = 'B';
+    }else if(score >= 70){
+        grade = 'C';
+    }else{
+        grade = 'D';
+    }
+
+    printf("점수는 %d, 등급은 %c", score, grade);
+    
+    //결과 -> 점수는 86, 등급은 B
+    
+}
+```
+
+---
+
+##### switch 조건문
+> 변수 값이 이미 정해져 있는 상수들과 비교할 때는 switch 조건문이 유리하다.
+
+
+```c++
+void main(){
+
+    int score = 86;
+    char grade;
+
+    switch(score / 10){
+        case 10:
+        case 9:
+            grade = 'A';
+            break;
+        case 8:
+            grade = 'B';
+            break;
+        case 7:
+            grade = 'C';
+            break;
+        default:
+            grade = 'D';
+            break;      
+    }
+
+    printf("점수는 %d, 등급은 %c", score, grade);
+    
+    //결과 -> 점수는 86, 등급은 B
+}
+```
