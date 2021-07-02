@@ -1,0 +1,51 @@
+---
+# Use a comment to ensure Jekyll reads the file to be transformed into CSS later
+# only main files contain this front matter, not partials.
+---
+@import "hydeout";
+
+@font-face {
+    font-family: 'GmarketSansMedium';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@media (min-width: 49rem){
+.container>*{max-width:100%;}
+}
+
+*{letter-spacing:-0.5px; font-family: 'GmarketSansMedium';}
+p, ul, ol, .highlight *, table{font-size:15px;}
+
+a {color:#202020;}
+a:hover, #sidebar a:hover, #sidebar a:focus{text-decoration:none; color:#766dc9;}
+
+//post
+.posts-list li a:hover, .post-title a:hover{text-decoration:none; color:#766dc9;} //블로그 목록, 홈에서 글제목 호버
+.back-link{display:none;} //포스트 목록 뒤로가기 버튼
+.posts-list li{padding-top:20px; border-top:3px solid #d1cee3; }
+.posts-list li a{font-size:20px;}
+
+//sidebar
+#sidebar .lead{margin:30px 0; font-size:20px;}
+#sidebar-icon-links{margin:20px 0;}
+
+//마크다운 css
+h1, h2, h3, h4, h5, h6{color:#534c8d;}
+.post-body h3{padding:3px; background-color:#534c8d; color:#fff;}
+
+strong{color:#8f88cc;}
+.highlight{background-color:#f7f6fb;}
+u{color:#766dc9; text-underline-position:under;}
+hr{border-top:5px solid #e2e2f6;}
+
+th{background-color:#dbd9ec; color:#575282;}
+th, td{border-color:#e1e0ed;}
+tbody tr:nth-child(odd) td, tbody tr:nth-child(odd) th{background-color:#f9f9fa;}
+
+blockquote{border:2px solid #766dc9; background-color:#f3f2fb; color:#534c8d;}
+.highlight{background-color:#efefef;}
+
+
+
