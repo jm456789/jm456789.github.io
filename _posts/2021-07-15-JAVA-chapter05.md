@@ -1,7 +1,7 @@
 ---
 layout: post
 
-title: "JAVA Chapter5 상속 - 슈퍼클래스에 대한 접근 지정 / 상속(extends)과 생성자 / super() / 업캐스팅, 다운캐스팅 / instanceof 연산자 / 메소드 오버라이딩 / 추상 메소드(abstract) / 인터페이스"
+title: "JAVA Chapter05 상속 - 슈퍼클래스에 대한 접근 지정 / 상속(extends)과 생성자 / super() / 업캐스팅, 다운캐스팅 / instanceof 연산자 / 메소드 오버라이딩 / 추상 메소드(abstract) / 인터페이스"
 excerpt: "슈퍼클래스에 대한 접근 지정 / 상속(extends)과 생성자 / super() / 업캐스팅, 다운캐스팅 / instanceof 연산자 / 메소드 오버라이딩 / 추상 메소드(abstract) / 인터페이스"
 
 categories:
