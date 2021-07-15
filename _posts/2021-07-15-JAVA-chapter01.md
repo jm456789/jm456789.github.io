@@ -1,7 +1,7 @@
 ---
 layout: post
 
-title: "JAVA Chapter1 자바 시작 - WORA / 바이트코드 / 실행환경 / JDK와 JRE / 자바 API / 자바 IDE / 자바의 특징"
+title: "JAVA Chapter01 자바 시작 - WORA / 바이트코드 / 실행환경 / JDK와 JRE / 자바 API / 자바 IDE / 자바의 특징"
 excerpt: "WORA / 바이트코드 / 실행환경 / JDK와 JRE / 자바 API / 자바 IDE / 자바의 특징"
 
 categories:
