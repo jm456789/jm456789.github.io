@@ -1,7 +1,7 @@
 ---
 layout: post
 
-title: "JAVA Chapter9 자바 GUI 기초, AWT와 스윙(Swing) - GUI 패키지 계층 구조 / 스윙 패키지 사용을 위한 import문 / 스윙 응용프로그램에서 main() 메소드의 기능과 위치 / 스윙 프로그램의 종료 / 컨테이너와 배치"
+title: "JAVA Chapter09 자바 GUI 기초, AWT와 스윙(Swing) - GUI 패키지 계층 구조 / 스윙 패키지 사용을 위한 import문 / 스윙 응용프로그램에서 main() 메소드의 기능과 위치 / 스윙 프로그램의 종료 / 컨테이너와 배치"
 excerpt: "GUI 패키지 계층 구조 / 스윙 패키지 사용을 위한 import문 / 스윙 응용프로그램에서 main() 메소드의 기능과 위치 / 스윙 프로그램의 종료 / 컨테이너와 배치"
 
 categories:
