@@ -12,7 +12,7 @@
 }
 
 @media (min-width: 49rem){
-.container>*{max-width:100%;}
+.container>*{max-width:calc(100% - 260px);}
 }
 
 *{letter-spacing:-0.5px; font-family: 'GmarketSansMedium';}
