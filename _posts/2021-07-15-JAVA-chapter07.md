@@ -1,7 +1,7 @@
 ---
 layout: post
 
-title: "JAVA Chapter7 제네릭과 컬렉션 - 제네릭 타입 매개변수 / Vector / 컬렉션과 자동 박싱/언박싱 / 컬렉션을 매개변수로 받는 메소드 만들기 / ArrayList / 컬렉션의 순차 검색을 위한 Iterator / HashMap<K, V> / LinkedList / Collections 클래스 활용"
+title: "JAVA Chapter07 제네릭과 컬렉션 - 제네릭 타입 매개변수 / Vector / 컬렉션과 자동 박싱/언박싱 / 컬렉션을 매개변수로 받는 메소드 만들기 / ArrayList / 컬렉션의 순차 검색을 위한 Iterator / HashMap<K, V> / LinkedList / Collections 클래스 활용"
 excerpt: "제네릭 타입 매개변수 / Vector / 컬렉션과 자동 박싱/언박싱 / 컬렉션을 매개변수로 받는 메소드 만들기 / ArrayList / 컬렉션의 순차 검색을 위한 Iterator / HashMap<K, V> / LinkedList / Collections 클래스 활용"
 
 categories:
