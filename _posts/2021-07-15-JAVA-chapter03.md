@@ -1,7 +1,7 @@
 ---
 layout: post
 
-title: "JAVA Chapter3 반복문과 배열 그리고 예외 처리 - 배열의 크기 구하기 / 배열과 for-each 문 / 다차원 배열 / 비정방형 배열 / main() 메소드 / 자바의 예외 처리 / 예외처리 try-catch-finally문 / "
+title: "JAVA Chapter03 반복문과 배열 그리고 예외 처리 - 배열의 크기 구하기 / 배열과 for-each 문 / 다차원 배열 / 비정방형 배열 / main() 메소드 / 자바의 예외 처리 / 예외처리 try-catch-finally문 / "
 excerpt: "배열의 크기 구하기 / 배열과 for-each 문 / 다차원 배열 / 비정방형 배열 / main() 메소드 / 자바의 예외 처리 / 예외처리 try-catch-finally문 / "
 
 categories:
