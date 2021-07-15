@@ -47,5 +47,7 @@ tbody tr:nth-child(odd) td, tbody tr:nth-child(odd) th{background-color:#f9f9fa;
 blockquote{border:2px solid #766dc9; background-color:#f3f2fb; color:#534c8d;}
 .highlight{background-color:#efefef;}
 
-
+//목차 
+.post-body #목차{    position: fixed;    right: 0;    top: 10px;    width: 300px;}
+.post-body #목차 + ul{position: fixed;    right: 0;    top: 100px;    width: 300px;}
 
