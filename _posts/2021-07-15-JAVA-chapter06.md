@@ -1,7 +1,7 @@
 ---
 layout: post
 
-title: "JAVA Chapter6 모듈과 패키지 개념, 자바 기본 패키지 - ==연산자 / boolean equals / Wrapper 클래스 / 문자열을 기본 타입으로 변환 / 기본 타입 값을 문자열로 변환 / 박싱(boxing)과 언박싱(unboxing) / String의 특징과 객체 생상 / 스트링 리터럴과 new String() / String 활용 / StringBuffer 클래스 / StringTokenizer 클래스 / Math 클래스 / Calendar 클래스"
+title: "JAVA Chapter06 모듈과 패키지 개념, 자바 기본 패키지 - ==연산자 / boolean equals / Wrapper 클래스 / 문자열을 기본 타입으로 변환 / 기본 타입 값을 문자열로 변환 / 박싱(boxing)과 언박싱(unboxing) / String의 특징과 객체 생상 / 스트링 리터럴과 new String() / String 활용 / StringBuffer 클래스 / StringTokenizer 클래스 / Math 클래스 / Calendar 클래스"
 excerpt: "==연산자 / boolean equals / Wrapper 클래스 / 문자열을 기본 타입으로 변환 / 기본 타입 값을 문자열로 변환 / 박싱(boxing)과 언박싱(unboxing) / String의 특징과 객체 생상 / 스트링 리터럴과 new String() / String 활용 / StringBuffer 클래스 / StringTokenizer 클래스 / Math 클래스 / Calendar 클래스"
 
 categories:
