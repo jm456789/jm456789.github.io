@@ -1,7 +1,7 @@
 ---
 layout: post
 
-title: "JAVA Chapter8 입출력 스트림과 파일 입출력 - 바이트 스트림과 문자 스트림 / 문자 스트림 클래스 / 파일 입출력과 예외처리 / InputStreamReader / FileWriter / FileOututStream / FileInputStream / 버퍼입출력과 파일 입출력 / 버퍼에 남아 있는 데이터 출력(flush) / File 클래스 / 블록 단위로 파일 고속 복사"
+title: "JAVA Chapter08 입출력 스트림과 파일 입출력 - 바이트 스트림과 문자 스트림 / 문자 스트림 클래스 / 파일 입출력과 예외처리 / InputStreamReader / FileWriter / FileOututStream / FileInputStream / 버퍼입출력과 파일 입출력 / 버퍼에 남아 있는 데이터 출력(flush) / File 클래스 / 블록 단위로 파일 고속 복사"
 excerpt: "바이트 스트림과 문자 스트림 / 문자 스트림 클래스 / 파일 입출력과 예외처리 / InputStreamReader / FileWriter / FileOututStream / FileInputStream / 버퍼입출력과 파일 입출력 / 버퍼에 남아 있는 데이터 출력(flush) / File 클래스 / 블록 단위로 파일 고속 복사"
 
 categories:
