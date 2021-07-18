@@ -811,3 +811,669 @@ public class ColorPoint extends Point{
 	}
 }
 ```
+
+**7**
+Point를 상속받아 3차원의 점을 나타내는 Point3D 클래스를 작성하라. 다음 main( ) 메소드를 포함하고 실행 결과와 같이 출력되게 하라.
+
+```java
+public static void main(String[] args) {
+	Point3D p=new Point3D(1,2,3); // 1, 2, 3은 각각 x, y, z축의 값.
+	System.out.println(p.toString()+"입니다.");
+		
+	p.moveUp(); // z 축으로 위쪽 이동
+	System.out.println(p.toString()+"입니다.");
+		
+	p.moveDown(); // z 축으로 아래쪽 이동
+	p.move(10, 10); // x, y 축으로 이동
+	System.out.println(p.toString()+"입니다.");
+		
+	p.move(100, 200, 300); // x, y, z 축으로 이동
+	System.out.println(p.toString()+"입니다.");
+}
+
+--출력--
+(1,2,3)의 점입니다.
+(1,2,4)의 점입니다.
+(10,10,3)의 점입니다.
+(100,200,300)의 점입니다.
+```
+
+```java
+public class Point3D extends Point{
+
+	private int z;
+	
+	Point3D(int x, int y, int z) {
+		super(x,y);
+		this.z=z;
+	}
+	
+	public String toString() {
+		return ("("+getX()+","+getY()+","+this.z+")의 점");
+	}
+	
+	public void moveUp() {
+		this.z++;
+	}
+	
+	public void moveDown() {
+		this.z--;
+	}
+	
+	protected void move(int x, int y, int z) { 
+		super.move(x,y);
+		this.z=z;
+	}
+	
+	public static void main(String[] args) {
+
+		Point3D p=new Point3D(1,2,3);
+		System.out.println(p.toString()+"입니다.");
+		
+		p.moveUp();
+		System.out.println(p.toString()+"입니다.");
+		
+		p.moveDown();
+		p.move(10, 10);
+		System.out.println(p.toString()+"입니다.");
+		
+		p.move(100, 200, 300);
+		System.out.println(p.toString()+"입니다.");
+	}
+}
+```
+
+**8**
+Point를 상속받아 양수의 공간에서만 점을 나타내는 PositivePoint 클래스를 작성하라. 다음 main( ) 메소드를 포함하고 실행 결과와 같이 출력되게 하라.
+
+```java
+public static void main(String[] args) {
+	PositivePoint p= new PositivePoint();
+	p.move(10,10);
+	System.out.println(p.toString()+"입니다.");
+		
+	p.move(-5, 5); // 객체 p는 음수 공간으로 이동되지 않음
+	System.out.println(p.toString()+"입니다.");
+		
+	PositivePoint p2=new PositivePoint(-10, -10);
+	System.out.println(p2.toString()+"입니다.");
+}
+
+--출력--
+(10,10)의 점입니다.
+(10,10)의 점입니다.
+(0,0)의 점입니다.
+
+힌트 :
+Point 클래스의 move( )를 PositivePoint 클래스에서 오버라이딩하여 재작성하고 적절히 super.move( )를 호출해야 한다. PositivePoint의 2 개의 생성자에서도 적절히 super( ) 생성자와 super.move( )를 호출해야 한다.
+```
+
+```java
+public class PositivePoint extends Point {
+
+	PositivePoint () {
+		super(0,0);
+	}
+	
+	PositivePoint(int x, int y) {
+		super(0,0);
+		move(x, y);
+	}
+	
+	public String toString() {
+		int x=getX();
+		int y=getY();
+		String str="("+x+","+y+")의 점";
+		return str;
+	}
+	
+	@Override
+	protected void move(int x, int y) {
+		if ((x>0)&&(y>0))
+			super.move(x, y);
+	}
+	
+	public static void main(String[] args) {
+
+		PositivePoint p= new PositivePoint();
+		p.move(10,10);
+		System.out.println(p.toString()+"입니다.");
+		
+		p.move(-5, 5);
+		System.out.println(p.toString()+"입니다.");
+		
+		PositivePoint p2=new PositivePoint(-10, -10);
+		System.out.println(p2.toString()+"입니다.");
+	}
+
+}
+```
+**9**
+다음 Stack 인터페이스를 상속받아 실수를 저장하는 StringStack 클래스를 구현하라.
+
+```java
+public interface Stack {
+	int length(); //현재 스택에 저장된 개수 리턴
+	int capacity(); //스택의 전체 저장 가능한 개수 리턴
+	String pop(); //스택의 톱(top)에 저장된 문자열 리턴
+	boolean push (String val); //스택의 톱(top)에 문자열 저장
+}
+```
+
+그리고 다음 실행 사례와 같이 작동하도록 StackApp 클래스에 main( ) 메소드를 작성하라.
+
+```java
+--출력--
+총 스택 저장 공간의 크기 입력 >>3
+문자열 입력 >> hello
+문자열 입력 >> sunny
+문자열 입력 >> smile
+문자열 입력 >> happy
+스택이 꽉 차서 푸시 불가!
+문자열 입력 >> 그만
+스택에 저장된 모든 문자열 팝 :smile sunny hello 
+```
+
+```java
+import java.util.Scanner;
+
+public class StackApp implements Stack{
+	private int top=0;
+	private String arr[];
+	
+	StackApp(int size) {arr=new String[size];}
+	
+	@Override
+	public int length() {return top;}
+	
+	@Override
+	public int capacity() {return arr.length;}
+	
+	@Override
+	public String pop() {
+		String val;
+		if (top==0)
+			val="0";
+		else {
+			top--;
+			val=arr[top];
+		}
+		return val;
+	}
+	
+	@Override
+	public boolean push (String val) {
+		if (top==arr.length)
+			return false;
+		else {
+			arr[top]=val;
+			top++;
+			return true;
+		}
+	}
+	
+	void run() {
+		Scanner scan=new Scanner(System.in);
+		
+		while(true) {
+			System.out.print("문자열 입력 >> ");
+			String val=scan.next();
+			if (val.equals("그만"))
+				break;
+			else {
+				boolean bool=push(val);
+				if (bool==false)
+					System.out.println("스택이 꽉 차서 푸시 불가!");
+			}
+		}
+		
+		System.out.print("스택에 저장된 모든 문자열 팝 :");
+		while (true) {
+			String val=pop();
+			if (val.equals("0")) {
+				System.out.println();
+				break;
+			}
+			else
+				System.out.print(val+" ");
+		}
+	}
+		
+	public static void main(String[] args) {
+		
+		Scanner scan=new Scanner(System.in);
+		
+		System.out.print("총 스택 저장 공간의 크기 입력 >>");
+		int size=scan.nextInt();
+		StackApp sa=new StackApp(size);
+		sa.run();
+	}
+
+}
+```
+
+**10**
+다음은 키와 값을 하나의 아이템으로 저장하고 검색 수정이 가능한 추상 클래스가 있다.
+
+```java
+abstract class PairMap {
+	protected String keyArray []; //key 들을 저장하는 배열
+	protected String valueArray []; //value 들을 저장하는 배열
+	abstract String get(String key); //key 값을 가진 value를 리턴, 없으면 null 리턴
+	abstract void put(String key, String value); //key와 value를 쌍으로 저장. 기존에 key가 있으면, 값을 value로 수정
+	abstract String delete(String key); //key 값을 가진 아이템(value와 함께) 삭제. 삭제된 value 값 리턴
+	abstract int length(); //현재 저장된 아이템 개수 리턴
+}
+```
+
+PairMap을 상속받는 Dictionary 클래스를 구현하고, 이를 다음과 같이 활용하는 main( ) 메소드를 가진 클래스 DictionaryApp도 작성하라.
+
+```java
+public static void main(String[] args) {
+	Dictionary dic=new Dictionary(10);
+	dic.put("황기태", "자바");
+	dic.put("이재문", "파이선");
+	dic.put("이재문", "C++"); //이재문의 값을 C++로 수정
+	System.out.println("이재문의 값은 "+dic.get("이재문"));
+	System.out.println("황기태의 값은 "+dic.get("황기태"));
+	dic.delete("황기태"); //황기태 아이템 삭제
+	System.out.println("황기태의 값은 "+dic.get("황기태")); //삭제된 아이템 접근
+}
+
+--출력--
+이재문의 값은 C++
+황기태의 값은 자바
+황기태의 값은 null
+```
+
+```java
+package sec03.exam01;
+
+abstract class PairMap {
+	protected String keyArray[]; // key 들을 저장하는 배열
+	protected String valueArray[]; // value 들을 저장하는 배열
+	abstract String get(String key); // key 값을 가진 value 리턴, 없으면 null 리턴
+	abstract void put(String key, String value); // key와 value를 쌍으로 저장. 기존에 key가 있으면, 값을 value로 수정
+	abstract String delete(String key); // key 값을 가진 아이템 (value와 함꼐) 삭제, 삭제된 value 값 리턴
+	abstract int length(); // 현재 저장된 아이템의 개수 리턴
+}
+
+class Dictionary extends PairMap {
+	private int top;
+	public Dictionary(int num) {
+		keyArray = new String[num];
+		valueArray = new String[num];
+		this.top = 0;
+	}
+	
+	public String get(String key) {
+		for(int i=0; i<keyArray.length; i++) {
+			if(key.equals(keyArray[i])) {
+			return valueArray[i];
+			}
+		}
+		return null; // 원하는 key가 없다면 null 리턴
+	}
+	public void put(String key, String value) {
+		for(int i=0; i<keyArray.length; i++) {
+			if(key.equals(keyArray[i])) {
+			keyArray[i] = key;
+			valueArray[i] = value;
+			return; // 중복된 key가 있다면 저장하고 함수 종료
+			}
+		}
+		keyArray[top] = key;
+		valueArray[top] = value;
+		top++;
+	}
+	public String delete(String key) {
+		for(int i=0; i<keyArray.length; i++) {
+			if(key.equals(keyArray[i])) {
+			String s = valueArray[i];
+			keyArray[i] = null;
+			valueArray[i] = null;
+			return s;  // 삭제된 value 값 리턴
+			}
+		}
+		return null; // 삭제된 것이 없다면 null 리턴
+	}
+	public int length() {
+		return top;
+	}
+}
+
+public class DictionaryApp {
+
+	public static void main(String[] args) {
+		Dictionary dic = new Dictionary(10);
+		dic.put("황기태", "자바");
+		dic.put("이재문", "파이선");
+		dic.put("이재문", "C++"); // 이재문의 값을 C++로 수정
+		System.out.println("이재문의 값은 "+dic.get("이재문"));
+		System.out.println("황기태의 값은 "+dic.get("황기태"));
+		dic.delete("황기태"); // 황기태 아이템 삭제
+		System.out.println("황기태의 값은 "+dic.get("황기태")); //삭제된 아이템 접근
+	}
+
+}
+
+```
+
+**11**
+철수 학생은 다음 3개의 필드와 메소드를 가진 4개의 클래스 Add, Sub, Mul, Div를 작성하려고 한다(4장 실습문제 11 참고)
+
+* int 타입의 a, b 필드: 2개의 피연산자
+* void setValue(int a, int b): 피연산자 값을 객체 내에 저장한다.
+* int calculate( ): 클래스의 목적에 맞는 연산을 실행하고 결과를 리턴한다.
+
+곰곰 생각해보니, Add, Sub, Mul, Div 클래스에 공통된 필드와 메소드가 존재하므로 새로운 추상 클래스 Calc를 작성하고 Calc를 상속받아 만들면 되겠다고 생각했다. 그리고 main( ) 메소드에서 다음 실행 사례와 같이 2개의 정수와 연산자를 입력받은 후, Add, Sub, Mul, Div 중에서 이 연산을 처리할 수 있는 객체를 생성하고 setValue( )와 calculate( )를 호출하여 그 결과 값을 화면에 출력하면 된다고 생각하였다. 철수처럼 프로그램을 작성하라.
+
+--출력--
+두 정수와 연산자를 입력하시오>>5 7 +
+12
+
+```java
+package sec03.exam01;
+
+import java.util.Scanner;
+
+abstract class Calc{
+	protected int a;
+	protected int b;
+	abstract void setValue(int a, int b);
+	abstract int calculate();
+}
+
+class Add extends Calc {
+	Add(int a, int b){
+		setValue(a, b);
+	}
+	
+	public void setValue(int a, int b) {
+		this.a=a;
+		this.b=b;
+	}
+	
+	public int calculate() {
+		return a+b;
+	}
+}
+
+class Sub extends Calc {
+	Sub(int a, int b){
+		setValue(a, b);
+	}
+	
+	public void setValue(int a, int b) {
+		this.a=a;
+		this.b=b;
+	}
+	
+	public int calculate() {
+		return a-b;
+	}
+}
+
+class Mul extends Calc {
+	Mul(int a, int b){
+		setValue(a, b);
+	}
+	
+	public void setValue(int a, int b) {
+		this.a=a;
+		this.b=b;
+	}
+	
+	public int calculate() {
+		return a*b;
+	}
+}
+
+class Div extends Calc {
+	Div(int a, int b){
+		setValue(a, b);
+	}
+	
+	public void setValue(int a, int b) {
+		this.a=a;
+		this.b=b;
+	}
+	
+	public int calculate() {
+		return a/b;
+	}
+}
+
+
+public class Calculate_ver2 {
+
+	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+		
+		System.out.print("두 정수와 연산자를 입력하시오 >>");
+		int a = scanner.nextInt();
+		int b = scanner.nextInt();
+		String cal = scanner.next();
+		
+		switch (cal) {
+		case "+":
+			Add add=new Add(a,b);
+			System.out.println(add.calculate());
+			break;
+		case "-":
+			Sub sub=new Sub(a,b);
+			System.out.println(sub.calculate());
+			break;
+		case "*":
+			Mul mul=new Mul(a,b);
+			System.out.println(mul.calculate());
+			break;
+		case "/":
+			Div div=new Div(a,b);
+			System.out.println(div.calculate());
+			break;
+		}
+		
+		scanner.close();
+
+	}
+}
+```
+
+**12**
+텍스트로 입출력하는 간단한 그래픽 편집기를 만들어보자. 본문 5.6절과 5.7절에서 사례로 든 추상 클래스 Shape과 Line, Rect, Circle 클래스 코드를 잘 완성하고 이를 활용하여 아래 시행 예시처럼 "삽입", "삭제", "모두 보기", "종료"의 4가지 그래픽 편집 기능을 가진 클래스 GraphicEditor을 작성하라.
+
+```java
+--출력--
+그래픽 에디터 beauty을 실행합니다.
+삽입(1), 삭제(2), 모두 보기(3), 종료(4)>>1
+Line(1), Rect(2), Circle(3)>>2
+삽입(1), 삭제(2), 모두 보기(3), 종료(4)>>1
+Line(1), Rect(2), Circle(3)>>3
+삽입(1), 삭제(2), 모두 보기(3), 종료(4)>>3
+Rect
+Circle
+삽입(1), 삭제(2), 모두 보기(3), 종료(4)>>2
+삭제할 도형의 위치>>3
+삭제할 수 없습니다.
+삽입(1), 삭제(2), 모두 보기(3), 종료(4)>>4
+beauty을 종료합니다.
+```
+
+힌트 : Shape을 추상 클래스로 작성한 사례는 다음과 같다. 
+
+```java
+public abstract class Shape {
+	private Shape next;
+	public Shape() {next=null;}
+	public void setNext(Shape obj) {next=obj;} // 링크 연결
+	public Shape getNext() {return next;}
+	public abstract void draw(); // 추상 메소드
+}
+```
+
+```java
+import java.util.Scanner;
+
+abstract class Shape {
+   private Shape next;
+   public Shape() { next = null; }
+   public void setNext(Shape obj) { next = obj; } // 링크 연결
+   public Shape getNext() { return next; }
+   public abstract void draw();
+}
+
+class Line extends Shape {
+   String name ="line";
+   public void draw() {
+      System.out.println("Line");
+   }
+}
+class Rect extends Shape {
+   String name ="Rect";
+   public void draw() {
+      System.out.println("Rect");
+   }
+}
+class Circle extends Shape {
+   String name ="circle";
+   public void draw() {
+      System.out.println("Circle");
+   }
+}
+
+public class GraphicEditor{
+   private Shape head, tail;
+   private Scanner sc; 
+   public GraphicEditor() {
+      head = null;  // 시작 노드
+      tail = null; // 끝 노드
+      sc = new Scanner(System.in);
+   }
+   public void run() {
+      System.out.println("그래픽 에디터 beauty를 실행합니다.");
+      while(true) {
+         System.out.print("삽입(1), 삭제(2), 모두 보기(3), 종료(4) >> ");
+         int num = sc.nextInt();
+         switch(num) {
+         case 1:
+            System.out.print("Line(1), Rect(2), Circle(3) >> ");
+            num = sc. nextInt();
+            insert(num);
+            break;
+         case 2:
+            System.out.print("삭제할 도형의 위치 >> ");
+            num = sc.nextInt();
+            delete(num);
+            break;
+         case 3:
+            print();
+            break;
+         case 4:
+            System.out.println("beauty을 종료합니다.");
+            sc.close();
+            return;
+         }
+      }
+   }
+   public void insert(int draw) { // 노드 삽입
+      Shape grapic;
+      switch(draw) {
+      case 1:
+         grapic = new Line();
+         break;
+      case 2:
+         grapic = new Rect();
+         break;
+      case 3:
+         grapic = new Circle();
+         break;
+      default:
+         System.out.println("다시 입력해 주세요.");
+         return;
+      }
+      if(head == null) { // head가 아무것도 가리키지 않으면
+         head = grapic; // head랑 tail이 새로운 노드를가리킴
+         tail = grapic;
+      }
+      else {
+         tail.setNext(grapic); // 끝 노드에 새로운 노드를 연결하고,
+         tail = grapic; // 끝 노드는 새로 만들어진 노드를 가리키게 함
+      }
+   }
+   public void print() { // 전체 노드 출력
+      Shape s = head;
+      while(s != null) {
+         s.draw();
+         s = s.getNext();
+      }
+   }
+   public void delete(int num) { // num은 몇번째 노드인지
+      Shape cur = head; // 현재 노드
+      Shape tmp = head;
+      int i;
+      if( num == 1) { // 첫번째 노드를 삭제하는 경우 
+         if(head == tail) { // 노드가 한개 일경우 
+            head = null;
+            tail = null;
+            return;
+         }
+         else { // 노드가 두개 이상
+            head = head.getNext();
+            return;
+         }
+      }
+      for(i=1; i<num; i++) {
+         tmp = cur; // 현재 노드를 저장 후  (즉, 이전 노드)
+         cur = cur.getNext(); // 다음 노드로 이동
+         if(cur == null) { // 노드 수가 입력 값보다 적을때
+            System.out.println("삭제할 수 없습니다.");
+            return;
+         }
+      }
+      if(i==num) { // 끝 노드를 가리킬때
+         tmp.setNext(cur.getNext());
+         tail = tmp;
+      }
+      else // 끝노드가 아니라면 이전노드가 다음 노드를 가리킴 (즉, 현재 노드 삭제)
+         tmp.setNext(cur.getNext());
+   }
+   public static void main(String[] args) {
+         GraphicEditor editor = new GraphicEditor();
+         editor.run();
+   }
+}
+```
+
+**13**
+다음은 도형의 구성을 묘사하는 인터페이스이다.
+
+```java
+interface Shape {
+	final double PI = 3.14; //상수
+	void draw(); //도형을 그리는 추상 메소드
+	double getArea(); //도형의 면적을 리턴하는 추상 메소드
+	default public void redraw() { //디폴트 메소드
+		System.out.print("--- 다시 그립니다. ");
+		draw();
+	}
+}
+```
+
+다음 main( ) 메소드와 실행 결과를 참고하여, 인터페이스 Shape을 구현한 클래스 Circle를 작성하고 전체 프로그램을 완성하라.
+
+```java
+public static void main(String[] args) {
+	Shape donut=new Circle(10); // 반지름이 10인 원 객체
+	donut.redraw();
+	System.out.println("면적은 "+donut.getArea());
+}
+
+--출력--
+--- 다시 그립니다. 반지름이 10인 원입니다.
+면적은 314.0
+```
+
+```java
+
+```
