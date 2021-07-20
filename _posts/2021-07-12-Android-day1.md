@@ -261,6 +261,7 @@ public class MainActivity extends AppCompatActivity {
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:onClick="onButton1Clicked"
         android:text="이미지 바꿔 보여주기" />
 
     <HorizontalScrollView
