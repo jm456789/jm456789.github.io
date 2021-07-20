@@ -46,6 +46,7 @@ last_modified_at: 2021-07-12
 
 ![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app1.jpg?raw=true)
 
+<div style="background-color: rgb(50, 50, 50);">
 ```java
 //xml code
 <?xml version="1.0" encoding="utf-8"?>
@@ -100,6 +101,7 @@ last_modified_at: 2021-07-12
         app:layout_constraintVertical_bias="0.868" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 ```
+</  
 
 ```java
 //java code
