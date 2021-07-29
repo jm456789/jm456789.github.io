@@ -1,13 +1,13 @@
 ---
 layout: post 
 
-title: "jsp&Servlet 03. DB에 저장하여 사용한 로그인, 회원가입, 메인, 로그아웃, 정보수정, 싱글톤개념"
+title: "Spring 03. DB에 저장하여 사용한 로그인, 회원가입, 메인, 로그아웃, 정보수정, 싱글톤개념"
 excerpt: ""
 
 categories:
-  - javascript&jsp&Servlet
+  - Spring
 tags:
-  - [jsp, Servlet, SQL]
+  - [Spring]
   
 toc: true
 toc_sticky: true
