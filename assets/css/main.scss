@@ -12,7 +12,9 @@
 }
 
 @media (min-width: 49rem){
-.container>*{max-width:calc(100% - 260px);}
+    .container{padding:4rem 2rem;}
+    .container>*{max-width:calc(100% - 320px);}
+    
 }
 
 *{letter-spacing:-0.5px; font-family: 'GmarketSansMedium';}
@@ -49,5 +51,5 @@ blockquote{border:2px solid #766dc9; background-color:#f3f2fb; color:#534c8d;}
 
 //목차 
 .post-body #목차{position: fixed; right: 0; top: 10px; width: 300px;}
-.post-body #목차 + ul{overflow: scroll; position: fixed; right:0; top:100px; width:300px; height: calc(100vh - 130px); padding: 10px; background-color: whitesmoke;}
+.post-body #목차 + ul{overflow: scroll; position: fixed; right:20px; top:100px; width:300px; height: calc(100vh - 130px); padding: 10px; background-color: whitesmoke;}
 
