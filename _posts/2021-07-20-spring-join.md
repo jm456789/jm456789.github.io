@@ -1,13 +1,13 @@
 ---
 layout: post 
 
-title: "jsp&Servlet 01. 회원가입, 로그인, 회원정보수정 "
+title: "Spring 01. 회원가입, 로그인, 회원정보수정 "
 excerpt: ""
 
 categories:
-  - javascript&jsp&Servlet
+  - Spring
 tags:
-  - [jsp, Servlet, SQL]
+  - [Spring]
   
 toc: true
 toc_sticky: true
