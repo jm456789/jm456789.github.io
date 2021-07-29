@@ -1,13 +1,13 @@
 ---
 layout: post 
 
-title: "jsp&Servlet 02. 게시판 만들기 전 단계"
+title: "Spring 02. 게시판 만들기 전 단계"
 excerpt: ""
 
 categories:
-  - javascript&jsp&Servlet
+  - Spring
 tags:
-  - [jsp, Servlet, SQL]
+  - [Spring]
   
 toc: true
 toc_sticky: true
