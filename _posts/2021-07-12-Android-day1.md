@@ -1,5 +1,5 @@
 ---
-layout: post     
+layout: post
 
 title: "Android "
 excerpt: ""
@@ -18,23 +18,48 @@ last_modified_at: 2021-07-12
 
 # 목차
 
-- [첫째마당](#첫째마당)
-- [첫번째 앱 만들기](#첫번째-앱-만들기)
-- [둘째마당](#둘째마당)
-- [프레임 레이아웃과 뷰의 전환](#프레임-레이아웃과-뷰의-전환)
-- [드로어블 만들기](#드로어블-만들기)
-- [터치 이벤트 처리하기](#터치-이벤트-처리하기)
-- [단말 방향을 전환했을 때 이벤트 처리하기](#단말-방향을-전환했을-때-이벤트-처리하기)
-- [토스트 모양과 위치 바꿔 보여주기, 스낵바 보여주기](#토스트-모양과-위치-바꿔-보여주기,-스낵바-보여주기)
-- [알림 대화상자 보여주기](#알림-대화상자-보여주기)
-- [프로그레스바 사용하기](#프로그레스바-사용하기)
-- [레이아웃 인플레이션](#레이아웃-인플레이션)
-- [여러 화면 만들고 화면 간 전환하기](#여러-화면-만들고-화면-간-전환하기)
-- [인텐트 살펴보기](#인텐트-살펴보기)
-- [플래그](#플래그)
-- [](#)
-- [](#)
-- [](#)
+- [목차](#목차)
+- [첫째마당,](#첫째마당)
+    - [버튼 누르면 토스트 메세지 띄우기, 네이버 접속 버튼, 전화걸기 버튼](#버튼-누르면-토스트-메세지-띄우기-네이버-접속-버튼-전화걸기-버튼)
+- [둘째마당,](#둘째마당)
+    - [프레임 레이아웃으로 버튼 누르면 이미지 전환](#프레임-레이아웃으로-버튼-누르면-이미지-전환)
+        - [프레임 레이아웃과 뷰의 전환](#프레임-레이아웃과-뷰의-전환)
+    - [드로어블 로 버튼 누르면 버튼 이미지 전환](#드로어블-로-버튼-누르면-버튼-이미지-전환)
+    - [일정 영역 안에서 스크롤 생성 후, 마우스 좌표값 가져오기](#일정-영역-안에서-스크롤-생성-후-마우스-좌표값-가져오기)
+    - [단말 방향을 전환](#단말-방향을-전환)
+    - [토스트 모양과 위치 바꿔 보여주기, 스낵바 보여주기](#토스트-모양과-위치-바꿔-보여주기-스낵바-보여주기)
+    - [알림 대화상자(알림창에 예, 아니오, 취소 버튼)](#알림-대화상자알림창에-예-아니오-취소-버튼)
+    - [프로그레스바(막대, 원형, 무한로딩)](#프로그레스바막대-원형-무한로딩)
+    - [레이아웃 인플레이션. 추가하기 버튼 누르면 하단에 다른 xml의 내용 표출](#레이아웃-인플레이션-추가하기-버튼-누르면-하단에-다른-xml의-내용-표출)
+    - [여러 화면 만들고 화면 간 전환하기. 액티비티](#여러-화면-만들고-화면-간-전환하기-액티비티)
+    - [인텐트. 버튼 누르면 전화걸기로 이동, 메뉴 화면 띄우기 누르면 다른 xml뜸](#인텐트-버튼-누르면-전화걸기로-이동-메뉴-화면-띄우기-누르면-다른-xml뜸)
+    - [플래그 FLAG_ACTIVITY_SINGLE_TOP 연습. 다른 xml로 이동, 여러번 누르면 동일한 액티비티 사용](#플래그-flag_activity_single_top-연습-다른-xml로-이동-여러번-누르면-동일한-액티비티-사용)
+    - [직렬화. 데이터 넘겨서 다른 xml이 데이터 받기.](#직렬화-데이터-넘겨서-다른-xml이-데이터-받기)
+    - [액티비티의 수명주기와 SharedPreferences](#액티비티의-수명주기와-sharedpreferences)
+    - [프래그먼트(부분화면) 만들어 화면에 추가하기](#프래그먼트부분화면-만들어-화면에-추가하기)
+    - [한 화면에 두개의 프래그먼트 넣기](#한-화면에-두개의-프래그먼트-넣기)
+    - [상단탭](#상단탭)
+    - [하단탭](#하단탭)
+    - [뷰페이저. 손가락으로 좌우 스크롤해서 넘겨볼 수 있음](#뷰페이저-손가락으로-좌우-스크롤해서-넘겨볼-수-있음)
+    - [바로가기 메뉴 만들기(햄버거같이 옆으로 슬라이딩)](#바로가기-메뉴-만들기햄버거같이-옆으로-슬라이딩)
+    - [앱 꺼져도 돌아가는거](#앱-꺼져도-돌아가는거)
+    - [브로드캐스트 수신자(내가 필요한 정보 골라서 받음), 접속 권한 부여?](#브로드캐스트-수신자내가-필요한-정보-골라서-받음-접속-권한-부여)
+    - [sms내용 액티비티에 나타내기](#sms내용-액티비티에-나타내기)
+    - [리소스와 메니페스트의 사용, 그래들(빌드 자동화 도구) 이해하기](#리소스와-메니페스트의-사용-그래들빌드-자동화-도구-이해하기)
+    - [나인패치(이미지 사이즈 늘리면 border 왜곡)](#나인패치이미지-사이즈-늘리면-border-왜곡)
+    - [새로운 뷰 만들기?](#새로운-뷰-만들기)
+    - [카드뷰, 버튼클릭시 리스트에서 사진이나 이름, 번호 바꾸기](#카드뷰-버튼클릭시-리스트에서-사진이나-이름-번호-바꾸기)
+    - [리싸이클러뷰](#리싸이클러뷰)
+    - [스피너(콤보박스, select)](#스피너콤보박스-select)
+    - [애니메이션(확대축소, 이동, 회전, 투명도)](#애니메이션확대축소-이동-회전-투명도)
+    - [페이지 슬라이딩](#페이지-슬라이딩)
+    - [앱 화면에 웹브라우저 넣기(하이브리드앱)](#앱-화면에-웹브라우저-넣기하이브리드앱)
+    - [시크바(유튜브에서 클릭시 점프 그거임)](#시크바유튜브에서-클릭시-점프-그거임)
+    - [키패드 제어하기](#키패드-제어하기)
+    - [앱 화면에 웹브라우저 넣기(하이브리드앱)](#앱-화면에-웹브라우저-넣기하이브리드앱-1)
+    - [앱 화면에 웹브라우저 넣기(하이브리드앱)](#앱-화면에-웹브라우저-넣기하이브리드앱-2)
+    - [앱 화면에 웹브라우저 넣기(하이브리드앱)](#앱-화면에-웹브라우저-넣기하이브리드앱-3)
+    - [앱 화면에 웹브라우저 넣기(하이브리드앱)](#앱-화면에-웹브라우저-넣기하이브리드앱-4)
 
 ---
 
@@ -547,7 +572,7 @@ public class MainActivity extends AppCompatActivity {
 
 ---
 
-### 단말 방향을 전환했을 때 이벤트 처리
+### 단말 방향을 전환
   
 * 세로방향에서 가로방향으로 전환되면 내용 다 지워지고 새로 그린다. 이때 입력한 값이 있으면 데이터 저장 후 가로화면 되고 데이터를 다시 불러와서 그려야 한다.
 * layout 폴더를 복사 한 후 layout-land를 만들면 가로로 인식. (activity_main.xml 파일은 다 만든 후 그대로 복사해서 layout-land폴더에 붙여넣기 하면 자동으로 가로로 전환된다)
@@ -809,7 +834,7 @@ public class MainActivity extends AppCompatActivity {
 
 ---
 
-### 알림 대화상자 보여주기(알림창에 예, 아니오, 취소 버튼)
+### 알림 대화상자(알림창에 예, 아니오, 취소 버튼)
 
 > 알림 대화상자 보여주기. (알림창에 예, 아니오, 취소 버튼있는거) (p.201)
 
@@ -928,7 +953,7 @@ public class MainActivity extends AppCompatActivity {
 
 ---
 
-### 프로그레스바 사용하기
+### 프로그레스바(막대, 원형, 무한로딩)
 
 > 막대 프로그레스바, 원형(무한로딩) 프로그래스바 (p.205)
 
@@ -1962,7 +1987,7 @@ public class MainActivity extends AppCompatActivity {
 
 ---
 
-### 프래그먼트(부분화면)
+### 프래그먼트(부분화면) 만들어 화면에 추가하기
 
 * 하나의 화면을 여러 부분으로 나눠서 보여주거나 각각의 부분 화면 단위로 바꿔서 보여주고 싶을 때 사용하는 것이 프래그먼트이다.(분리되어있는 독립적인 조각화면 )
 * 프래그먼트가 제대로 <u>동작</u>하는 시점은 프래그먼트가 메모리에 만들어진 시점이 아니라 <u>액티비티에 올라가는 시점.</u>
@@ -1974,6 +1999,7 @@ public class MainActivity extends AppCompatActivity {
 > 부분화면 불러와서 보여주기. (p.268)
 
 ![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app22.jpg?raw=true)
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app23.jpg?raw=true)
 
 ```java
 //xml code. activity_main.xml
@@ -2024,6 +2050,7 @@ public class MainActivity extends AppCompatActivity {
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/holo_orange_light"
     android:orientation="vertical"
     tools:context=".MainFragment" >
 
@@ -2135,101 +2162,1058 @@ public class MenuFragment extends Fragment {
 
 ---
 
-### 프래그먼트로 화면 만들기
+### 한 화면에 두개의 프래그먼트 넣기
 
-> 버튼 누르면 이미지 전환
+drawable 폴더에 이미지 세개 넣어야 함
 
-![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app1.jpg?raw=true)
+> 화면의 위쪽과 아래쪽을 나눈 후 위쪽에는 이미지 선택이 가능한 리스트가 보이는 프래그먼트를 만들어 넣고 아래쪽에는 선택된 이미지가 보이는 프래그먼트 (p.279)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app24.jpg?raw=true)
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app25.jpg?raw=true)
 
 ```java
-//xml code
+//xml code. 1. fragment_list.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".fragment_list" >
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="첫 번째 이미지" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="두 번째 이미지" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="세 번째 이미지" />
+</LinearLayout>
+
+//xml code. 4. activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <fragment
+        android:id="@+id/listFragment"
+        android:name="com.example.samplefragment2.ListFragment"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <fragment
+        android:id="@+id/viewerFragment"
+        android:name="com.example.samplefragment2.ViewerFragment"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+</LinearLayout>
 
 ```
 
 ```java
-//java code
+//java code. 2. ListFragment.java
+package com.example.samplefragment2;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.example.samplefragment2.R;
+
+public class ListFragment extends Fragment {
+
+    public static interface ImageSelectionCallback {
+        public void onImageSelected(int position);
+    }
+
+    public ImageSelectionCallback callback;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof ImageSelectionCallback) {
+            callback = (ImageSelectionCallback) context;
+        }
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_list, container, false);
+
+        Button button = rootView.findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (callback != null) {
+                    callback.onImageSelected(0);
+                }
+            }
+        });
+
+        Button button2 = rootView.findViewById(R.id.button2);
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (callback != null) {
+                    callback.onImageSelected(1);
+                }
+            }
+        });
+
+        Button button3 = rootView.findViewById(R.id.button3);
+        button3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (callback != null) {
+                    callback.onImageSelected(2);
+                }
+            }
+        });
+
+        return rootView;
+    }
+
+}
+
+//java code. 3. ViewerFragment.java
+package com.example.samplefragment2;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.example.samplefragment2.R;
+
+public class ViewerFragment extends Fragment {
+    ImageView imageView;
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_viewer, container, false);
+        imageView = rootView.findViewById(R.id.imageView);
+
+        return rootView;
+    }
+
+    public void setImage(int resId) {
+        imageView.setImageResource(resId);
+    }
+
+}
+
+//java code. 5. MainActivity.java
+package com.example.samplefragment2;
+
+import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+
+import com.example.samplefragment2.R;
+
+public class MainActivity extends AppCompatActivity implements com.example.samplefragment2.ListFragment.ImageSelectionCallback {
+    ListFragment listFragment;
+    com.example.samplefragment2.ViewerFragment viewerFragment;
+    int[] images = {R.drawable.dream01, R.drawable.dream02, R.drawable.dream03};
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        FragmentManager manager = getSupportFragmentManager();
+        listFragment = (ListFragment) manager.findFragmentById(R.id.listFragment);
+        viewerFragment = (com.example.samplefragment2.ViewerFragment) manager.findFragmentById(R.id.viewerFragment);
+    }
+
+    @Override
+    public void onImageSelected(int position) {
+        viewerFragment.setImage(images[position]);
+    }
+}
+
 
 ```
 
 ---
 
-> 버튼 누르면 이미지 전환
+### 상단탭
 
-![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app1.jpg?raw=true)
+> 상단탭 (p.297)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app27.jpg?raw=true)
 
 ```java
-//xml code
+//xml code. 1. activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?colorPrimaryDark"
+                android:elevation="1dp"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+                <TextView
+                    android:id="@+id/titleText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="타이틀"
+                    android:textAppearance="@style/Base.TextAppearance.Widget.AppCompat.Toolbar.Title" />
+
+            </androidx.appcompat.widget.Toolbar>
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/background_light"
+                android:elevation="1dp"
+                app:tabGravity="fill"
+                app:tabMode="fixed"
+                app:tabSelectedTextColor="?colorAccent"
+                app:tabTextColor="?colorPrimary" />
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <FrameLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        </FrameLayout>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</RelativeLayout>
+
+//xml code. 2. fragment1.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/holo_blue_bright"
+    android:orientation="vertical"
+    tools:context=".Fragment1">
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="첫 번째" />
+</LinearLayout>
+
+//xml code. 3. fragment2.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/holo_orange_light"
+    android:orientation="vertical"
+    tools:context=".Fragment1">
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="두 번째" />
+</LinearLayout>
+
+//xml code. 4. fragment3.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/holo_purple"
+    android:orientation="vertical"
+    tools:context=".Fragment1">
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="세 번째" />
+</LinearLayout>
+
+//\app\src\main\res\values 에서 themes.xml
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.SampleTab" parent="Theme.MaterialComponents.DayNight.NoActionBar">  //이부분 변경
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+    </style>
+</resources>
 
 ```
 
 ```java
-//java code
+//java code. 5. Fragment1.java
+package org.techtown.tab;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.fragment.app.Fragment;
+
+public class Fragment1 extends Fragment {
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment1, container, false);
+    }
+
+}
+
+//java code. 5. Fragment2.java
+package org.techtown.tab;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.fragment.app.Fragment;
+
+public class Fragment1 extends Fragment {
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment2, container, false);
+    }
+
+}
+
+//java code. 5. Fragment3.java
+package org.techtown.tab;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.fragment.app.Fragment;
+
+public class Fragment1 extends Fragment {
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment3, container, false);
+    }
+
+}
+
+//java code. 6. MainActivity.java
+package org.techtown.tab;
+
+import android.os.Bundle;
+import android.util.Log;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+
+import com.google.android.material.tabs.TabLayout;
+
+public class MainActivity extends AppCompatActivity {
+
+    Toolbar toolbar;
+
+    Fragment1 fragment1;
+    Fragment2 fragment2;
+    Fragment3 fragment3;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowTitleEnabled(false);
+
+        fragment1 = new Fragment1();
+        fragment2 = new Fragment2();
+        fragment3 = new Fragment3();
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment1).commit();
+
+        TabLayout tabs = findViewById(R.id.tabs);
+        tabs.addTab(tabs.newTab().setText("통화기록"));
+        tabs.addTab(tabs.newTab().setText("스팸기록"));
+        tabs.addTab(tabs.newTab().setText("연락처"));
+        tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                int position = tab.getPosition();
+                Log.d("MainActivity", "선택된 탭 : " + position);
+
+                Fragment selected = null;
+                if (position == 0) {
+                    selected = fragment1;
+                } else if (position == 1) {
+                    selected = fragment2;
+                } else if (position == 2) {
+                    selected = fragment3;
+                }
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container, selected).commit();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
+
+    }
+
+}
+```
+
+---
+
+### 하단탭
+
+> 하단탭 (p.304)
+
+```java
+//xml code. /app/res폴더에 menu폴더 만든 후 그 안에 생성. 1. menu_bottom.xml
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/tab1"
+        app:showAsAction="ifRoom"
+        android:enabled="true"
+        android:icon="@android:drawable/ic_dialog_email"
+        android:title="이메일" />
+    <item
+        android:id="@+id/tab2"
+        app:showAsAction="ifRoom"
+        android:icon="@android:drawable/ic_dialog_info"
+        android:title="정보" />
+    <item
+        android:id="@+id/tab3"
+        app:showAsAction="ifRoom"
+        android:enabled="true"
+        android:icon="@android:drawable/ic_dialog_map"
+        android:title="위치" />
+
+</menu>
+
+//xml code. 2. activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="0dp"
+        android:layout_marginStart="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:itemBackground="?colorPrimary"
+        app:itemIconTint="@drawable/item_color"
+        app:itemTextColor="@drawable/item_color"
+        app:menu="@menu/menu_bottom" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+// 3. fragment1.xml, fragment2.xml, fragment3.xml 코드 복사해서 붙여넣기
+```
+
+```java
+// 4. Fragment1.java, Fragment2.java, Fragment3.java 도 복사해서 붙여넣기
+
+//java code. 5. MainActivity.java
+package org.techtown.tab;
+
+import android.os.Bundle;
+import android.view.MenuItem;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+public class MainActivity extends AppCompatActivity {
+
+    Fragment1 fragment1;
+    Fragment2 fragment2;
+    Fragment3 fragment3;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        fragment1 = new Fragment1();
+        fragment2 = new Fragment2();
+        fragment3 = new Fragment3();
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment1).commit();
+
+        BottomNavigationView bottomNavigation = findViewById(R.id.bottom_navigation);
+        bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.tab1:
+                        Toast.makeText(getApplicationContext(), "첫 번째 탭 선택됨", Toast.LENGTH_LONG).show();
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.container, fragment1).commit();
+
+                        return true;
+                    case R.id.tab2:
+                        Toast.makeText(getApplicationContext(), "두 번째 탭 선택됨", Toast.LENGTH_LONG).show();
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.container, fragment2).commit();
+
+                        return true;
+                    case R.id.tab3:
+                        Toast.makeText(getApplicationContext(), "세 번째 탭 선택됨", Toast.LENGTH_LONG).show();
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.container, fragment3).commit();
+
+                        return true;
+                }
+
+                return false;
+            }
+        });
+    }
+}
 
 ```
 
 ---
 
-> 버튼 누르면 이미지 전환
+### 뷰페이저. 손가락으로 좌우 스크롤해서 넘겨볼 수 있음
 
-![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app1.jpg?raw=true)
+어댑터는 인터페이스같은 약속.
+
+> 뷰페이저는 손가락으로 좌우 스크롤해서 넘겨볼 수 있는 기능 제공. 만약 화면 전체를 뷰페이저로 채운다면 좌우 스크롤을 통해 화면을 넘겨볼 수 있다.   
+> 뷰페이저는 내부에서 <u>어댑터</u>라는 것과 상호작용하게 되어잇는데 이것은 뷰페이저가 여러 개의 아이템 중에 하나를 보여주는 방식으로 동작하기 때문. (p.308)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app28.jpg?raw=true)
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app29.jpg?raw=true)
 
 ```java
-//xml code
+//xml code. 1. fragment1.xml, fragment2.xml, fragment3.xml과 Fragment1.java, Fragment2.java, Fragment3.java 이전거에서 복사해서 붙여넣기
+
+//xml code.3.  activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity" >
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="두번째 화면 보여주기" />
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.viewpager.widget.PagerTitleStrip
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:background="#55cedf"
+            android:textColor="#FFFFFF"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp">
+        </androidx.viewpager.widget.PagerTitleStrip>
+
+    </androidx.viewpager.widget.ViewPager>
+</LinearLayout>
 
 ```
 
 ```java
-//java code
+//java code. 2. MainActivity.java
+package org.techtown.pager;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity {
+    ViewPager pager;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        pager = findViewById(R.id.pager);
+        pager.setOffscreenPageLimit(3);  //setOffscreenPageLimit는 한번에 로딩할 개수. 여기선 3개 로딩하겠다
+
+        MyPagerAdapter adapter = new MyPagerAdapter(getSupportFragmentManager());
+
+        Fragment1 fragment1 = new Fragment1();
+        adapter.addItem(fragment1);
+
+        Fragment2 fragment2 = new Fragment2();
+        adapter.addItem(fragment2);
+
+        Fragment3 fragment3 = new Fragment3();
+        adapter.addItem(fragment3);
+
+        pager.setAdapter(adapter);
+
+        Button button = findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pager.setCurrentItem(1);  //손가락으로 움직이지 않아도 버튼 누르면 해당 페이지로 이동할 수 있도록
+            }
+        });
+    }
+
+    class MyPagerAdapter extends FragmentStatePagerAdapter {
+        ArrayList<Fragment> items = new ArrayList<Fragment>();  //ArrayList->동적배열. <Fragment>는 Fragment타입만 담을 수 있다
+
+        public MyPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        public void addItem(Fragment item) {
+            items.add(item);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return items.get(position);
+        }
+
+        @Override
+        public int getCount() {  //프래그먼트 몇개 있는지
+            return items.size();
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {  //현재 페이지 출력
+            return "페이지 " + position;
+        }
+    }
+}
 ```
 
 ---
 
-> 버튼 누르면 이미지 전환
+### 바로가기 메뉴 만들기(햄버거같이 옆으로 슬라이딩)
 
-![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app1.jpg?raw=true)
+> 걍 넘어갔으니 책이랑 소스 볼것~ (p.315)
+
+---
+
+### 앱 꺼져도 돌아가는거
+
+서비스 -> 백그라운드에서 돌아가는 화면이 없는 기능. ex) 카톡 메세지오면 알람
+
+> input에 입력하고 껐다 켜도 그대로 불러오는거? 그대로 남아있는거? (p.326)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app30.jpg?raw=true)
 
 ```java
-//xml code
+//xml code. activity_main.xml
 
 ```
 
 ```java
-//java code
-
+//java code. MainActivity.java
 ```
 
 ---
 
-> 버튼 누르면 이미지 전환
+### 브로드캐스트 수신자(내가 필요한 정보 골라서 받음), 접속 권한 부여?
 
-![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app1.jpg?raw=true)
+> 브로드캐스팅은 메시지를 여러개 객체에 전달하는 것. 받든지 말든지 모든 방송 출력   
+> 브로드캐스트 수신자는 내가 필요한 정보 골라서 받음 (p.334)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
 
 ```java
-//xml code
+//xml code. activity_main.xml
 
 ```
 
 ```java
-//java code
-
-```
-
----
-
-> 버튼 누르면 이미지 전환
-
-![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app1.jpg?raw=true)
-
-```java
-//xml code
-
-```
-
-```java
-//java code
-
+//java code. MainActivity.java
 ```
 
 ---
 
+### sms내용 액티비티에 나타내기
+
+> sms내용 액티비티에 나타내기 (p.341)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+
+```java
+//xml code. activity_main.xml
+
+```
+
+```java
+//java code. MainActivity.java
+```
+
+---
+
+### 리소스와 메니페스트의 사용, 그래들(빌드 자동화 도구) 이해하기
+
+> 리소스와 메니페스트의 사용, 그래들(빌드 자동화 도구) 이해하기 (p.356)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+
+```java
+//xml code. activity_main.xml
+
+```
+
+```java
+//java code. MainActivity.java
+```
+
+---
+
+### 나인패치(이미지 사이즈 늘리면 border 왜곡)
+
+> 이미지 파일 이름을 ooo.9.png로 저장하면 자동으로 나인패치 적용된다 (p.365)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+
+```java
+//xml code. activity_main.xml
+
+```
+
+```java
+//java code. MainActivity.java
+```
+
+---
+
+### 새로운 뷰 만들기?
+
+> 새로운 뷰 만들기? (p.367)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+
+```java
+//xml code. activity_main.xml
+
+```
+
+```java
+//java code. MainActivity.java
+```
+
+---
+
+### 카드뷰, 버튼클릭시 리스트에서 사진이나 이름, 번호 바꾸기
+
+> 카드뷰 레이아웃 (p.382)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+
+```java
+//xml code. activity_main.xml
+
+```
+
+```java
+//java code. MainActivity.java
+```
+
+---
+
+### 리싸이클러뷰
+
+어댑터는
+
+* 두개의 서로 다른 객체를 연결
+* 확장성때문에 어댑터 사용
+* 인터페이스(규약)이랑 비슷
+
+뷰홀더는 뷰를 여러개 담은거
+
+> 리싸이클러뷰는 반복적으로 출력. 끝
+> 어댑터가 거의 바꿔줌? (p.386)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+
+```java
+//xml code. activity_main.xml
+
+```
+
+```java
+//java code. MainActivity.java
+```
+
+---
+
+### 스피너(콤보박스, select)
+
+> 스피너(콤보박스, select) (p.401)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+
+```java
+//xml code. activity_main.xml
+
+```
+
+```java
+//java code. MainActivity.java
+```
+
+---
+
+### 애니메이션(확대축소, 이동, 회전, 투명도)
+
+> 애니메이션은 자바가 아닌 xml로 한다 (p.408)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+
+```java
+//xml code. activity_main.xml
+
+```
+
+```java
+//java code. MainActivity.java
+```
+
+---
+
+### 페이지 슬라이딩
+
+> 페이지 슬라이딩 (p.417)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+
+```java
+//xml code. activity_main.xml
+
+```
+
+```java
+//java code. MainActivity.java
+```
+
+---
+
+### 앱 화면에 웹브라우저 넣기(하이브리드앱)
+
+> 하이브리드앱은 필요한 부분만 넣기! 전체 이거면 구글 앱스토어에서 반려함 (p.421)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+
+```java
+//xml code. activity_main.xml
+
+```
+
+```java
+//java code. MainActivity.java
+```
+
+---
+
+### 시크바(유튜브에서 클릭시 점프 그거임)
+
+>  (p.425)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+
+```java
+//xml code. activity_main.xml
+
+```
+
+```java
+//java code. MainActivity.java
+```
+
+---
+
+### 키패드 제어하기
+
+>  (p.429)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+
+```java
+//xml code. activity_main.xml
+
+```
+
+```java
+//java code. MainActivity.java
+```
+
+---
+
+### 앱 화면에 웹브라우저 넣기(하이브리드앱)
+
+> 새로운 뷰 만들기? (p.367)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+
+```java
+//xml code. activity_main.xml
+
+```
+
+```java
+//java code. MainActivity.java
+```
+
+---
+
+### 앱 화면에 웹브라우저 넣기(하이브리드앱)
+
+> 새로운 뷰 만들기? (p.367)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+
+```java
+//xml code. activity_main.xml
+
+```
+
+```java
+//java code. MainActivity.java
+```
+
+---
+
+### 앱 화면에 웹브라우저 넣기(하이브리드앱)
+
+> 새로운 뷰 만들기? (p.367)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+
+```java
+//xml code. activity_main.xml
+
+```
+
+```java
+//java code. MainActivity.java
+```
+
+---
+
+### 앱 화면에 웹브라우저 넣기(하이브리드앱)
+
+> 새로운 뷰 만들기? (p.367)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+
+```java
+//xml code. activity_main.xml
+
+```
+
+```java
+//java code. MainActivity.java
+```
