@@ -1475,5 +1475,117 @@ public static void main(String[] args) {
 ```
 
 ```java
+package sec03.exam01;
 
+interface Shape {
+	final double PI = 3.14; //상수
+	void draw(); //도형을 그리는 추상 메소드
+	double getArea(); //도형의 면적을 리턴하는 추상 메소드
+	default public void redraw() { //디폴트 메소드
+		System.out.print("--- 다시 그립니다. ");
+		draw();
+	}
+}
+
+public class Circle implements Shape {	
+	private int radius;
+	private double area;
+	
+	Circle(int radius){
+		this.radius = radius;
+		area=this.radius*this.radius*PI;
+	}
+	
+	public void draw() {
+		System.out.println("반지름이 "+radius+"인 원입니다.");
+	}
+	
+	public double getArea() {
+		return area;
+	}
+
+	public static void main(String[] args) {
+		Shape donut=new Circle(10); // 반지름이 10인 원 객체
+		donut.redraw();
+		System.out.println("면적은 "+donut.getArea());
+	}
+
+}
+
+```
+
+**14**  
+다음 main( ) 메소드와 실행 결과를 참고하여, 문제 13의 Shape 인터페이스를 구현한 클래스 Oval, Rect를 추가 작성하고 전체 프로그램을 완성하라.
+
+```java
+public static void main(String[] args) {
+	Shape [] list= new Shape[3]; // Shape을 상속받은 클래스 객체의 래퍼런스 배열
+	list[0]= new Circle(10); // 반지름이 10인 원 객체
+	list[1]= new Oval(20, 30); // 20x30 사각형에 내접하는 타원
+	list[2]= new Rect(10, 40); // 10x40 크기의 사각형
+		
+	for (int i=0; i<list.length; i++) list[i].redraw();
+	for (int i=0; i<list.length;i++) System.out.println("면적은 "+list[i].getArea());
+}
+
+//출력
+--- 다시 그립니다. 반지름이 10인 원입니다.
+--- 다시 그립니다. 20x30에 내접하는 타원입니다.
+--- 다시 그립니다. 10x40크기의 사각형 입니다.
+면적은 314.0
+면적은 1884.0
+면적은 400.0
+```
+
+```java
+public class Oval implements Shape {
+	private int radius1;
+	private int radius2;
+	private double area;
+	
+	Oval (int radius1, int radius2) {
+		this.radius1=radius1;
+		this.radius2=radius2;
+		area=radius1*radius2*PI;
+	}
+	
+	public void draw() {
+		System.out.println(radius1+"x"+radius2+"에 내접하는 타원입니다.");
+	}
+	
+	public double getArea() {return area;}
+}
+```
+
+```java
+public class Rect implements Shape {
+	private int width;
+	private int height;
+	private double area;
+	
+	Rect (int width, int height) {
+		this.width=width;
+		this.height=height;
+		area=this.width*this.height;
+	}
+	
+	public void draw() {
+		System.out.println(width+"x"+height+"크기의 사각형 입니다.");
+	}
+	
+	public double getArea() {return area;}
+	
+	public static void main(String[] args) {
+		Shape [] list= new Shape[3];
+		list[0]= new Circle(10);
+		list[1]= new Oval(20, 30);
+		list[2]= new Rect(10, 40);
+		
+		for (int i=0; i<list.length; i++)
+			list[i].redraw();
+		for (int i=0; i<list.length;i++)
+			System.out.println("면적은 "+list[i].getArea());
+	}
+
+}
 ```
