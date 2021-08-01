@@ -654,3 +654,667 @@ public class CalendarEx {
 // (20시
 // 오후8시30분0초0밀리초
 ```
+
+---
+
+### p.383~388 실습문제
+
+**1**
+다음 main( )이 실행되면 아래 예시와 같이 출력되도록 MyPoint 클래스를 작성하라.
+
+```java
+public static void main(String[] args) {
+	MyPoint p = new MyPoint(3, 50);
+	MyPoint q = new MyPoint(4, 50);
+	System.out.println(p);
+	if (p.equals(q))
+		System.out.println("같은 점");
+	else
+		System.out.println("다른 점");
+}
+
+--출력--
+Point(3,50)
+다른 점
+```
+
+```java
+public class MyPoint {
+	private int a;
+	private int b;
+	
+	MyPoint(int a, int b){
+		this.a=a;
+		this.b=b;
+	}
+	
+	public String toString() {
+		return "Point("+a+","+b+")";
+	}
+	
+	public boolean equals(Object obj) {
+		MyPoint mp=(MyPoint)obj;
+		if ((a==mp.a)&&(b==mp.b))
+			return true;
+		else
+			return false;
+	}
+
+	public static void main(String[] args) {
+		MyPoint p = new MyPoint(3, 50);
+		MyPoint q = new MyPoint(4, 50);
+		System.out.println(p);
+		if (p.equals(q))
+			System.out.println("같은 점");
+		else
+			System.out.println("다른 점");
+	}
+
+}
+```
+
+**2**
+중심을 나타내는 정수 x, y와 반지름 radius 필드를 가지는 Circle 클래스를 작성하고자 한다. 생성자는 3개의 인자(x, y, radius)를 받아 해당 필드를 초기화하고, equals( ) 메소드는 두 개의 Circle 객체의 중심이 같으면 같은 것으로 판별하도록 한다.
+
+```java
+public static void main(String[] args) {
+	Circle a = new Circle(2,3,5); //중심 (2,3)에 반지름 5인 원
+	Circle b = new Circle(2,3,30); //중심 (2,3)에 반지름 30인 원
+	System.out.println("원 a : " + a);
+	System.out.println("원 b : " + b);
+	if(a.equals(b))
+		System.out.println("같은 원");
+	else
+		System.out.println("서로 다른 원");
+}
+
+--출력--
+원 a : Circle(2,3)반지름5
+원 b : Circle(2,3)반지름30
+같은 원
+```
+
+```java
+public class Circle {
+	private int x, y, radius;
+	
+	Circle(int x, int y, int radius){
+		this.x=x;
+		this.y=y;
+		this.radius=radius;
+	}
+	
+	public String toString() {
+		return "Circle(" + x + "," + y + ") 반지름" + radius;
+	}
+	
+	public boolean equals(Object obj) {
+		Circle circle = (Circle)obj;
+		if( (x==circle.x) && (y==circle.y) ) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+
+	public static void main(String[] args) {
+		Circle a = new Circle(2,3,5); //중심 (2,3)에 반지름 5인 원
+		Circle b = new Circle(2,3,30); //중심 (2,3)에 반지름 30인 원
+		System.out.println("원 a : " + a);
+		System.out.println("원 b : " + b);
+		if(a.equals(b))
+			System.out.println("같은 원");
+		else
+			System.out.println("서로 다른 원");
+	}
+
+}
+```
+
+**3**
+다음 코드를 수정하여, Calc 클래스는 etc 패기지에, MainApp 클래스는 main 패키지로 분리 작성하라.
+
+```java
+class Calc {
+	private int x, y;
+	public Calc(int x, int y) {this.x = x; this.y = y; }
+	public int sum() { return x+y; }
+}
+
+public class MainApp {
+	public static void main(String[] args) {
+		Calc c = new Calc(10, 20);
+		System.out.println(c.sum());
+	}
+}
+```
+
+```java
+package etc;
+
+public class Calc {
+	private int x, y;
+	public Calc(int x, int y) {this.x = x; this.y = y; }
+	public int sum() { return x+y; }
+}
+```
+
+```java
+package main;
+import etc.Calc;
+
+public class MainApp {
+
+	public static void main(String[] args) {
+		Calc c = new Calc(10, 20);
+		System.out.println(c.sum());
+	}
+
+}
+```
+
+**4**
+다음 코드를 수정하여 Shape 클래스는 base 패키지에, Circle 클래스는 derived 패키지에, GraphicEditor 클래스는 app 패키지에 분리 작성하라.
+
+```java
+class Shape {
+	public void draw() { System.out.println("Shape"); }
+}
+class Circle extends Shape {
+	public void draw() { System.out.println("Circle"); }
+}
+public class GraphicEditor {
+	public static void main(String[] args) {
+		Shape shape = new Circle();
+		shape.draw();
+	}
+}
+```
+
+```java
+package base;
+
+public class Shape {
+	public void draw() { System.out.println("Shape"); }
+}
+
+```
+
+```java
+package derived;
+
+import base.Shape;
+
+public class Circle extends Shape {
+	public void draw() { System.out.println("Circle"); }
+}
+
+```
+
+```java
+package app;
+
+import base.Shape;
+import derived.Circle;
+
+public class GraphicEditor {
+
+	public static void main(String[] args) {
+		Shape shape = new Circle();
+		shape.draw();
+	}
+
+}
+
+```
+
+**5**
+Calendar 객체를 생성하면 현재 시간을 알 수 있다. 프로그램을 실행한 현재 시간이 새벽 4시에서 낮 12시 이전이면 "Good Morning"을, 오후 6시 이전이면 "Good Afternoon"을, 밤 10시 이전이면 "Good Evening"을, 그 이후는 "Good Night"을 출력하는 프로그램을 작성하라.
+
+```java
+--출력--
+현재 시간은 10시 22분입니다.
+Good Morning
+```
+
+```java
+
+```
+
+**6**
+경과시간을 맞추는 게임을 작성하라. 다음 예시를 참고하면, <Enter> 키를 입력하면 현재 초 시간을 보여주고 여기서 10초에 더 근접하도록 다음 <Enter> 키를 입력한 사람이 이기는 게임이다. 
+
+```java
+--출력--
+10초에 가까운 사람이 이기는 게임입니다.
+황기태 시작 <Enter>키>>
+	현재 초 시간 = 42
+10초 예상 후 <Enter>키>>
+	현재 초 시간 = 50
+이재문 시작 <Enter>키>>
+	현재 초 시간 = 51
+10초 예상 후 <Enter>키>>
+	현재 초 시간 = 4
+황기태의 결과 8, 이재문의 결과 13, 승자는 황기태
+
+
+힌트 :
+<Enter> 키를 입력받기 위해서는 Scanner.nextLine( )을 호출하면 된다.
+```
+
+```java
+import java.util.Scanner;
+import java.util.Calendar;
+class Person {
+	Calendar now = Calendar.getInstance();
+	Scanner sc = new Scanner(System.in);
+	private String name, buffer;
+	private int sec1, sec2;
+	
+	public Person(String name) {
+		this.name = name;
+	}
+	
+	public int game() {
+		System.out.print(name+" 시작 <Enter>키  >>");
+		sec1 = enter();
+		System.out.print("10초 예상 후 <Enter>키  >>");
+		sec2 = enter();
+		if(sec1 < sec2)
+			return sec2-sec1;
+		else 
+			return (60-sec1) + sec2;
+	}
+	
+	public int enter() {
+		buffer = sc.nextLine();
+		now = Calendar.getInstance();		
+		System.out.println("\t현재 초 시간 = "+ now.get(Calendar.SECOND));
+		return now.get(Calendar.SECOND);
+	}
+}
+public class chap06_prac06 {
+	public static void main(String[] args) {
+		Person person1 = new Person("황기태");
+		Person person2 = new Person("이재문");
+		
+		System.out.println("10초에 가까운 사람이 이기는 게임입니다.");
+		int result1 = person1.game();
+		int result2 = person2.game();
+		
+		if(Math.abs(result1 - 10) < Math.abs(result2 - 10))
+			System.out.println("황기태의 결과 "+result1+", 이재문의 결과 "+result2+", 승자는 황기태");
+		else
+			System.out.println("황기태의 결과 "+result1+", 이재문의 결과 "+result2+", 승자는 이재문");
+	}
+}
+
+```
+
+**7**
+Scanner를 이용하여 한 라인을 읽고, 공백으로 분리된 어절이 몇 개 들어 있는지 "그만"을 입력할 때까지 반복하는 프로그램을 작성하라.
+
+```java
+--출력--
+>>I love Java.
+어절 개수는 3
+>>자바는 객체 지향 언어로서 매우 좋은 언어이다.
+어절 개수는 7
+>>그만
+종료합니다...
+
+
+힌트 :
+Scanner.nextLine( )을 이용하면 빈칸을 포함하여 한 번에 한 줄을 읽을 수 있다.
+```
+
+(1) StringTokenizer 클래스를 이용하여 작성하라.
+
+```java
+import java.util.Scanner;
+import java.util.StringTokenizer;
+
+public class ch06_07 {
+
+	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+		
+		String str ="";
+		
+		while(true) {
+			
+			System.out.print(">> ");
+			str = scanner.nextLine();
+			
+			if(str.equals("그만")) {
+				break;
+			}
+			
+			StringTokenizer st = new StringTokenizer(str, " ");
+			System.out.println("어절 개수는 : " + st.countTokens());
+		}
+		
+		System.out.println("종료합니다...");
+		scanner.close();
+
+	}
+
+}
+```
+
+(2) String 클래스의 split( ) 메소드를 이용하여 작성하라.
+
+```java
+import java.util.Scanner;
+import java.util.StringTokenizer;
+
+public class ch06_07 {
+
+	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+		
+		String str ="";
+		
+		while(true) {
+			
+			System.out.print(">> ");
+			str = scanner.nextLine();
+			
+			if(str.equals("그만")) {
+				break;
+			}
+			
+			String arr[] = str.split(" ");
+			System.out.println("어절 개수는 : " + arr.length);
+		}
+		
+		System.out.println("종료합니다...");
+		scanner.close();
+
+	}
+
+}
+```
+
+**8**
+문자열을 입력받아한 글자씩 회전시켜 모두 출력하는 프로그램을 작성하라.
+
+```java
+--출력--
+문자열을 입력하세요. 빈칸이나 있어도 되고 영어 한글 모두 됩니다.
+I Love you
+ Love youI
+Love youI 
+ove youI L
+ve youI Lo
+e youI Lov
+ youI Love
+youI Love 
+ouI Love y
+uI Love yo
+I Love you
+
+
+힌트 :
+Scanner.nextLine( )을 이용하면 빈칸을 포함하여 한 번에 한 줄을 읽을 수 있다.
+```
+
+```java
+import java.util.Scanner;
+
+public class Rotation {
+
+	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+		
+		System.out.println("문자열을 입력하세요. 빈칸이나 있어도 되고 영어 한글 모두 됩니다.");
+		String str = scanner.nextLine();
+		
+		for(int i=1; i<str.length(); i++) {
+			System.out.print(str.substring(i));			
+			System.out.println(str.substring(0, i));
+		}
+		
+		System.out.println(str);
+		
+		scanner.close();
+		
+	}
+
+}
+
+```
+
+**9**
+철수와 컴퓨터의 가위바위보 게임을 만들어보자. 가위, 바위, 보는 각각 1, 2, 3 키이다. 철수가 키를 입력하면, 동시에 프로그램도 Math.Random( )을 이용하여 1, 2, 3 중에 한 수를 발생시키고 이것을 컴퓨터가 낸 것으로 한다. 그런 다음 철수와 컴퓨터 중 누가 이겼는지 판별하여 승자를 출력하라.
+
+```java
+--출력--
+철수[가위(1), 바위(2), 보(3), 끝내기(4)]>>1
+철수(가위) : 컴퓨터(바위)
+컴퓨터가 이겼습니다.
+철수[가위(1), 바위(2), 보(3), 끝내기(4)]>>3
+철수(보) : 컴퓨터(바위)
+철수가 이겼습니다.
+철수[가위(1), 바위(2), 보(3), 끝내기(4)]>>4
+```
+
+```java
+import java.util.Scanner;
+
+public class Random {
+
+	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+		
+		while(true){
+			System.out.print("철수[가위(1), 바위(2), 보(3), 끝내기(4)]>>");
+			int user = scanner.nextInt();
+			
+			if(user == 4) {break;}
+			
+			int com = (int)(Math.random() * 3 + 1);
+			
+			switch(user) {
+				case 1 :
+					System.out.print("철수(가위) : ");
+					break;
+				case 2 :
+					System.out.print("철수(바위) : ");
+					break;
+				case 3 :
+					System.out.print("철수(보) : ");
+					break;
+			}
+			switch(com) {
+				case 1 :
+					System.out.println("컴퓨터(가위)");
+					break;
+				case 2 :
+					System.out.println("컴퓨터(바위)");
+					break;
+				case 3 :
+					System.out.println("컴퓨터(보)");
+					break;
+			}
+			
+			if( (user==1 && com==2) || (user==2 && com==3) || (user==3 && com==1) ) {
+				System.out.println("컴퓨터가 이겼습니다");
+			}else if( (com==1 && user==2) || (com==2 && user==3) || (com==3 && user==1) ) {
+				System.out.println("철수가 이겼습니다");
+			}else {
+				System.out.println("비겼습니다.");
+			}
+		}
+		
+		scanner.close();		
+
+	}
+
+}
+```
+
+or
+
+```java
+import java.util.Scanner;
+
+class Player {
+	private String name;
+	private Scanner scanner = new Scanner(System.in);
+	
+	public Player(String name) {
+		this.name = name;
+	}
+	public String getName() { return name; }
+	public int turn() {
+		System.out.print(name + "[가위(1), 바위(2), 보(3), 끝내기(4)]>>");
+		return  scanner.nextInt();
+	}
+}
+class Computer extends Player {
+	public Computer(String name) {
+		super(name);
+	}
+	public int turn() {
+		return (int)(Math.random() * 3 + 1); // 1부터 3까지의 수
+	}	
+}
+public class Random {
+	private final String s[] = {"가위", "바위", "보"};
+	private Player [] players = new Player[2];
+	public Random() {
+		players[0] = new Player("철수");
+		players[1] = new Computer("컴퓨터");
+	}
+	
+	public void run() {
+		int userChoice, computerChoice;
+		while (true) {
+			userChoice = players[0].turn(); // 철수 차례
+			if (userChoice == 4) 
+				break; // 게임 끝내기
+			
+			computerChoice = players[1].turn(); // 컴퓨터 차례
+			
+			if (userChoice < 1 || userChoice > 3) { 
+				System.out.println("잘못 입력하셨습니다.");
+			} 
+			else {
+				System.out.print(players[0].getName() + "(" + s[userChoice-1] + ")" + " : ");				
+				System.out.println(players[1].getName() + "(" + s[computerChoice-1] + ")");
+				int diff = userChoice - computerChoice; 
+				switch (diff) {
+				case 0: // 같은 것을 낸 경우
+					System.out.println("비겼습니다.");
+					break;
+				case -1: // 사용자가 가위, 컴퓨터가 바위 또는 사용자가 바위, 컴퓨터가 보
+				case 2:	// 사용자가 보, 컴퓨터가 가위
+					System.out.println(players[1].getName()+"가 이겼습니다.");
+					break;
+				case 1: // 사용자가 바위, 컴퓨터가 가위 또는 사용자가 보, 컴퓨터가 바위
+				case -2: // 사용자가 가위, 컴퓨터가 보
+					System.out.println(players[0].getName()+"가 이겼습니다.");
+				}
+			}
+		}	
+	}
+	
+	public static void main (String[] args) {
+		Random game = new Random();
+		game.run();
+	}
+}
+```
+
+**10**
+갬블링 게임을 만들어보자. 두 사람이 게임을 진행한다. 이들의 이름을 키보드로 입력받으며 각 사람은 Person 클래스로 작성하라. 그러므로 프로그램에는 2개의 Person 객체가 생성되어야 한다. 두 사람은 번갈아 가면서 게임을 진행하는데 각 사람이 자기 차례에서 <Enter> 키를 입력하면, 3개의 난수가 발생되고 이 숫자가 모두 같으면 승자가 되고 게임이 끝난다. 난수의 범위를 너무 크게 잡으면 3개의 숫자가 일치하게 나올 가능성이 적기 때문에 숫자의 범위는 1~3까지로 한다.
+
+```java
+--출력--
+1번째 선수 이름>>수희
+2번째 선수 이름>>연수
+[수희]:<Enter>
+	3	1	1	아쉽군요!
+[연수]:<Enter>
+	3	1	3	아쉽군요!
+[수희]:<Enter>
+	2	2	1	아쉽군요!
+[연수]:<Enter>
+	1	1	2	아쉽군요!
+[수희]:<Enter>
+	3	3	3	수희님이 이겼습니다!
+```
+
+```java
+import java.util.Scanner;
+class Person {
+	private int num1, num2, num3;
+	public String name;
+	public Person(String name) {
+		this.name = name;
+	}
+	public boolean game() {
+		num1 = (int) ((Math.random()*3)+1);
+		num2 = (int) ((Math.random()*3)+1);
+		num3 = (int) ((Math.random()*3)+1);
+		System.out.print("\t"+num1+"  "+num2+"  "+num3+"  ");
+		if(num1 == num2 && num2 == num3)
+			return true;
+		else 
+			return false;
+	}
+}
+public class chap06_prac10 {
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		System.out.print("1번째 선수 이름>>");
+		String name = sc.next();
+		Person person1 = new Person(name);
+		System.out.print("2번째 선수 이름>>");
+		name =sc.next();
+		Person person2 = new Person(name);
+		String buffer = sc.nextLine();
+		while(true) {
+			System.out.print("["+person1.name+"]:<Enter>");
+			buffer = sc.nextLine();
+			if(person1.game()) {
+				System.out.println(person1.name+"님이 이겼습니다!");
+				break;
+			}
+			System.out.println("아쉽군요!");
+
+			System.out.print("["+person2.name+"]:<Enter>");
+			buffer = sc.nextLine();
+			if(person2.game()) {
+				System.out.println(person2.name+"님이 이겼습니다!");
+				break;
+			}
+			System.out.println("아쉽군요!");
+		}
+		sc.close();
+	}
+}
+```
+
+**11**
+StringBuffer 클래스를 활용하여 명령처럼 문자열을 수정하라. 아래 실행 예시에서 love!LOVE는 love를 찾아 LOVE로 수정하라는 명령이다. 첫 번째 만난 문자열만 수정한다.
+
+```java
+--출력--
+>>우리는 love Java Programming.
+명령: 우리는!We
+We love Java Programming.
+명령: LOV!사랑
+찾을 수 없습니다!
+명령: !Java
+잘못된 명령입니다!
+명령: love!LOVE
+We LOVE Java Programming.
+명령: 그만
+종료합니다
+```
+
+```java
+
+```
