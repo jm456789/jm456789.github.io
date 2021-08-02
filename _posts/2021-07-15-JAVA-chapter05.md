@@ -1589,3 +1589,141 @@ public class Rect implements Shape {
 
 }
 ```
+
+---
+
+**11번 번외**
+더하기(+), 빼기(-), 곱하기(*), 나누기(/)를 수행하는 각 클래스 Add, Sub, Mul, Div를 만들어라. 이들은 모두 다음 필드와 메소드를 가진다. 
+
+* int 타입의 a, b필드: 연산하고자 하는 피연산자
+* void setValue(int a, int b): 피연산자를 객체 내에 설정한다.
+* int calculate(): 해당 클래스의 목적에 맞는 연산을 실행하고 그 결과를 리턴한다.
+
+Add, Sub, Mul, Div 클래스에 공통된 필드와 메소드가 존재하므로 새로운 추상클래스 Calc를 정의하고 이들이 Calc를 상속받게 하라. main() 메소드에서는 다음 실행 사례의 그림과 같이 키보드로부터 계산하고자 하는 연산자와 두 정수를 입력받은 후, Add, Sub, Mul, Div 중에서 이 연산을 시행할 수 있는 객체를 생성하고 setValue()와 calculate()를 호출하여 그 결과 값을 화면에 출력하라. 
+
+Add   
+int a
+int b
+setValue()
+calculate()
+
+Sub   
+int a
+int b
+setValue()
+calculate()
+
+Mul, Div ...
+
+```java
+//Calc.java
+public abstract class Calc{
+	int a, b;
+	
+	void setValue(int a, int b){
+		this.a=a;
+		this.b=b;
+	}
+	
+	abstract int calculate();
+}
+```
+
+```java
+//Add.java
+public class Add extends Calc{
+	
+	@Override
+	int calculate() {
+		return a+b; 
+	}
+}
+```
+
+```java
+//Sub.java
+public class Sub extends Calc{
+	
+	@Override
+	int calculate() {
+		return a-b; 
+	}
+}
+
+```
+
+```java
+//Mul.java
+public class Mul extends Calc{
+	
+	@Override
+	int calculate() {
+		return a*b; 
+	}
+}
+```
+
+```java
+//Div.java
+public class Div extends Calc{
+		
+	@Override
+	int calculate() {
+		return a/b; 
+	}
+}
+```
+
+```java
+//Calculate.java
+import java.util.Scanner;
+
+public class Calculate {
+	
+	static void prn() {
+		System.out.println("1. ADD");
+		System.out.println("2. SUBTRACT");
+		System.out.println("3. MULTIPLY");
+		System.out.println("4. DIVIDE");
+		System.out.println("5. EXITE");
+		System.out.print("메뉴 선택 >>");
+	}
+	
+	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+		
+		Calc cc = null;
+		
+		while(true) {
+			prn();
+			int choice = scanner.nextInt();
+									
+			switch(choice) {
+				case 1 : 
+					cc = new Add();
+					break;
+				case 2 : 
+					cc = new Sub(); 
+					break;
+				case 3 : 
+					cc = new Mul(); 
+					break;
+				case 4 : 
+					cc = new Div(); 
+					break;
+				case 5 :
+					System.out.println("종료합니다..");
+					return;
+				default :
+					System.out.println("범위 밖 번호 입력. 다시 선택하세요");
+					break;
+			}
+			
+			System.out.println("두 정수 입력");
+			cc.setValue(scanner.nextInt(), scanner.nextInt());
+			
+			System.out.println("결과 :" + cc.calculate());
+		}
+	}
+}
+```
