@@ -874,3 +874,101 @@ public class Multiply{
   }
 }
 ```
+
+---
+
+**번외**
+6개의 정수형 데이터가 저장될 수 있는 정수형 1차원 배열을 선언하여, 1~45사이의 임의의 난수를 발생하여 저장하도록 하고, 오름차순방식으로 정렬하여 그 결과를 출력하시오.(미완성)
+	
+```java
+import java.util.Scanner;
+
+public class LottoExam {
+	
+	static void prn() {
+		System.out.println("1. 로또 번호 자동생성");
+		System.out.println("2. 로또 번호 입력");
+		System.out.println("3. 당첨 확인");
+		System.out.println("4. 종료");
+	}
+	
+	static void numAuto(int[] arrAuto) {
+		
+		for(int i=0; i<arrAuto.length; i++) {
+			arrAuto[i] = (int)(Math.random() * 10 + 1);
+			for(int t=0; t<i; t++) {
+				if(arrAuto[i] == arrAuto[t]) {
+					i--;
+				}
+			}
+		}
+	}
+	
+	static void numInsert(int[] arr) {
+		Scanner scanner = new Scanner(System.in);		
+		
+		for(int i=0; i<6; i++) {
+			System.out.print(i+1 + "번째 값 : ");
+					
+			int num = scanner.nextInt();
+			arr[i] = num;
+			
+			if(num > 46) {
+				System.out.println("1~45 사이의 값을 입력하세요");
+				i--;
+			}
+		}
+		
+	}
+	
+	static void winning(int[] arrAuto, int[] arr) {
+		
+		System.out.print("당첨 번호 : " );
+		for(int i=0; i<6; i++) {
+			System.out.print("\t" + arrAuto[i] + " ");
+		}
+		
+		System.out.println();
+		
+		System.out.print("선택 번호 : " );
+		for(int i=0; i<6; i++) {
+			System.out.print("\t" + arr[i] + " ");
+		}
+		
+		System.out.println();
+
+	}
+	
+	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+		
+		int arrAuto[] = new int[6];
+		int arr[] = new int [6];
+		
+		while(true) {
+			prn();
+			int choice = scanner.nextInt();
+			
+			System.out.println("메뉴 선택 : [" + choice + "]");
+			
+			switch(choice) {
+				case 1 :					
+					numAuto(arrAuto);
+					break;
+				case 2 :
+					numInsert(arr);
+					break;
+				case 3 :
+					winning(arrAuto, arr);
+					break;
+				case 4 :
+					System.out.println("종료..");
+					return;
+				default :
+					System.out.println("범위 오류. 다시 입력");
+					break;
+			}
+		}
+	}
+}
+```
