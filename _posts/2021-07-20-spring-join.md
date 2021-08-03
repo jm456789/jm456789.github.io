@@ -34,15 +34,20 @@ grant connect, resource to c##jane;
 
 ### 테이블 생성 
 
-create table counter(
-    ID number primary key,
-    Name varchar(20),
-    phoneNumber varchar(20)
+create table counter(   
+    ID number primary key,   
+    Name varchar(20),   
+    phoneNumber varchar(20)   
 );
 
 ### 행 추가
 
 insert into member(id, pw, name, phone) values('aa','123','홍길동','010-0000-0002');
+
+### 행 추가 전에 권한 줘야 함
+
+시스템에 다시 접속해서   
+alter user c##jane default tablespace users quota unlimited on users;
 
 ---
 
