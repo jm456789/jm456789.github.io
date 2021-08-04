@@ -3849,7 +3849,9 @@ public class MainActivity extends AppCompatActivity {
 
 > 웹(http)으로 요청해서 정보 받기, 리싸이클러뷰 같이 사용 (p.477)
 
-![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app34.jpg?raw=true)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app35.jpg?raw=true)
 
 ```java
 //xml code. activity_main.xml
