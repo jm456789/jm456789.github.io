@@ -3152,6 +3152,1627 @@ public class MainActivity extends AppCompatActivity {
 
 ---
 
+### Thread와 핸들러(1초 지날때마다 숫자 1씩 증가)
+
+> 서로 다른 Thread는(별도의 Thread) textView같은거 갖다 쓰려면 오류 발생.
+> 서로 다른 Thread는 접근(공유)할 수 없음. 이 문제를 해결하려면 핸들러를 사용해야 한다.(p.439 필기 그림 참고)
+> 
+> 한쪽 Thread는 명령만 계속 집어넣고, 다른 Thread는 명령 처리한다.
+> 두개는 자료 공유를 해야 하는데 그게 messagequeue와(선입선출. stack은 후입선출) handler. (p.435 필기 그림 참고)
+
+> bgThread는 핸들러한테 비어있는 메세지 달라고 요청(obtain)하고, bgthread는 bundle로 메세지를 담아 messagequeue에 보낸다(send)
+> handler는 handlemessage로 ui처리하게 보내고 이걸 다시 mainactivity에 보내서 화면에 표출한다? (p. 441 그림 필기 참조)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app31.jpg?raw=true)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app32.jpg?raw=true)
+
+```jsp
+<!--xml code. activity_main.xml-->
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.247" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="152dp"
+        android:text="Button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintVertical_bias="0.074" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+```
+
+```java
+//java code. MainActivity.java
+package com.example.samplethread2;
+
+import android.os.Handler;
+import android.os.Message;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    TextView textView;  //멤버변수
+
+    MainHandler handler;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        textView = findViewById(R.id.textView);
+
+        Button button = findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                BackgroundThread thread = new BackgroundThread();
+                thread.start();
+            }
+        });
+
+        handler = new MainHandler();
+    }
+
+    class BackgroundThread extends Thread {
+        int value = 0;
+
+        public void run() {
+            for (int i = 0; i < 100; i++) {
+                try {
+                    Thread.sleep(1000);
+                } catch(Exception e) {}
+
+                value += 1;
+                Log.d("Thread", "value : " + value);
+
+                Message message = handler.obtainMessage();  //obtainMessage은 비어있는 메세지 달라
+                Bundle bundle = new Bundle();
+                bundle.putInt("value", value);  //bundle에 키와 값 저장
+                message.setData(bundle);  //키와 값이 들어있는 bundle을 메세지에 저장
+
+                handler.sendMessage(message);  //핸들러로 메시지 객체 보내기
+            }
+        }
+    }
+
+    class MainHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+
+            Bundle bundle = msg.getData();
+            int value = bundle.getInt("value");
+            textView.setText("value 값 : " + value);
+        }
+    }
+
+}
+
+
+//또는 아래거. 위에 obtain을 없애고 handler.post로 넘기는 방법. 더 간결화. 편한거 쓰면 된다
+package org.techtown.thread;
+
+import android.os.Handler;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    TextView textView;
+
+    Handler handler = new Handler();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        textView = findViewById(R.id.textView);
+
+        Button button = findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                BackgroundThread thread = new BackgroundThread();
+                thread.start();
+            }
+        });
+
+    }
+
+    class BackgroundThread extends Thread {
+        int value = 0;
+
+        public void run() {
+            for (int i = 0; i < 100; i++) {
+                try {
+                    Thread.sleep(1000);
+                } catch(Exception e) {}
+
+                value += 1;
+                Log.d("Thread", "value : " + value);
+
+                handler.post(new Runnable() {
+                    public void run() {
+                        textView.setText("value 값 : " + value);
+                    }
+                });
+            }
+        }
+    }
+
+}
+
+```
+
+---
+
+### 웹(http)으로 요청해서 정보 받기. Volley방식. 
+
+네트워크(p.455)   
+2-tier, 3-tier방식이 있음.    
+2-tier는 돈이 없지 않은 이상 잘 안씀. 서버 고장나거나 해킹때문에 보안에 취약.
+
+소켓방식은 거의 안씀. 절차가 복잡하고 Thread도 필요하기 때문에 volley 쓴다. (p.463)   
+
+> 웹(http)으로 요청해서 정보 받기. Volley방식. (p.469)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+
+```java
+//build.gradle(Module)
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    compileSdk 30
+
+    defaultConfig {
+        applicationId "com.example.samplerequest"
+        minSdk 21
+        targetSdk 30
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    
+    //이 부분 추가
+    implementation 'com.android.volley:volley:1.2.0'
+}
+```
+
+```jsp
+<!--AdndroidManifest.xml-->
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.samplerequest">
+
+    <uses-permission android:name="android.permission.INTERNET"/>   <!--이 부분 추가, 아래 usesCleartextTraffic도 추가. 이건 접속시 HTTP 프로토콜 허용-->
+
+    <application
+        android:usesCleartextTraffic="true"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.SampleRequest">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
+```
+
+```jsp
+<!--xml code. activity_main.xml-->
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity" >
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="사이트 주소 입력"
+        android:inputType="textPersonName" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="요청하기" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
+```
+
+```java
+//java code. MainActivity.java
+package com.example.samplerequest;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class MainActivity extends AppCompatActivity {
+    EditText editText;
+    TextView textView;
+
+    static RequestQueue requestQueue;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+
+        editText = findViewById(R.id.editText);
+        textView = findViewById(R.id.textView);
+
+        Button button = findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                makeRequest();
+            }
+        });
+
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(getApplicationContext());
+        }
+
+    }
+
+    public void makeRequest() {
+        String url = editText.getText().toString();
+
+        StringRequest request = new StringRequest(
+                Request.Method.GET,
+                url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        println("응답 -> " + response);
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        println("에러 -> " + error.getMessage());
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> params = new HashMap<String,String>();
+
+                return params;
+            }
+        };
+
+        request.setShouldCache(false);
+        requestQueue.add(request);
+        println("요청 보냄.");
+    }
+
+    public void println(String data) {
+        textView.append(data + "\n");
+    }
+
+}
+```
+
+---
+
+### 웹(http)으로 요청해서 정보 받기. Volley방식. json 사용
+
+> 웹(http)으로 요청해서 정보 받기. Volley방식. json 사용. (p.474)
+> 위에거에서 json 추가해서 맨 아래 영화 정보의수 추가
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+
+```java
+//build.gradle(Module)
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    compileSdk 30
+
+    defaultConfig {
+        applicationId "com.example.samplerequest"
+        minSdk 21
+        targetSdk 30
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    
+    //이 부분 추가. 추가후 코끼리 버튼 눌러주기
+    implementation 'com.android.volley:volley:1.2.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
+}
+```
+
+```jsp
+<!--AdndroidManifest.xml-->
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.samplerequest">
+
+    <uses-permission android:name="android.permission.INTERNET"/>   <!--이 부분 추가, 아래 usesCleartextTraffic도 추가. 이건 접속시 HTTP 프로토콜 허용-->
+
+    <application
+        android:usesCleartextTraffic="true"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.SampleRequest">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
+```
+
+```jsp
+<!--xml code. activity_main.xml-->
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity" >
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="사이트 주소 입력"
+        android:inputType="textPersonName" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="요청하기" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
+```
+
+```java
+//java code. MovieList.java
+package com.example.samplerequest;
+
+public class MovieList {
+    MovieListResult boxOfficeResult;
+}
+
+//java code. MovieListResult.java
+package com.example.samplerequest;
+
+import android.graphics.Movie;
+
+import java.util.ArrayList;
+
+public class MovieListResult {
+
+    String boxofficeType;
+    String showRange;
+
+    ArrayList<Movie> dailyBoxOfficeList = new ArrayList<Movie>();
+
+}
+
+//java code. Movie.java
+package com.example.samplerequest;
+
+public class Movie {
+
+    String rnum;
+    String rank;
+    String rankInten;
+    String rankOldAndNew;
+    String movieCd;
+    String movieNm;
+    String openDt;
+    String salesAmt;
+    String salesShare;
+    String salesInten;
+    String salesChange;
+    String salesAcc;
+    String audiCnt;
+    String audiInten;
+    String audiChange;
+    String audiAcc;
+    String scrnCnt;
+    String showCnt;
+
+}
+
+//java code. MainActivity.java
+package com.example.samplerequest;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class MainActivity extends AppCompatActivity {
+    EditText editText;
+    TextView textView;
+
+    static RequestQueue requestQueue;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+
+        editText = findViewById(R.id.editText);
+        textView = findViewById(R.id.textView);
+
+        Button button = findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                makeRequest();
+            }
+        });
+
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(getApplicationContext());
+        }
+
+    }
+
+    public void makeRequest() {
+        String url = editText.getText().toString();
+
+        StringRequest request = new StringRequest(
+                Request.Method.GET,
+                url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        println("응답 -> " + response);
+
+                        processResponse(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        println("에러 -> " + error.getMessage());
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> params = new HashMap<String,String>();
+
+                return params;
+            }
+        };
+
+        request.setShouldCache(false);
+        requestQueue.add(request);
+        println("요청 보냄.");
+    }
+
+    public void println(String data) {
+        textView.append(data + "\n");
+    }
+
+    public void processResponse(String response) {
+        Gson gson = new Gson();
+        MovieList movieList = gson.fromJson(response, MovieList.class);  //response(웹에서받아온내용을)  MovieList.class에 넣어라
+
+        println("영화정보의 수 : " + movieList.boxOfficeResult.dailyBoxOfficeList.size());
+    }
+
+}
+```
+
+---
+
+### 웹(http)으로 요청해서 정보 받기, 리싸이클러뷰 같이 사용
+
+> 웹(http)으로 요청해서 정보 받기, 리싸이클러뷰 같이 사용 (p.477)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+
+```java
+//xml code. activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Button" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>
+```
+
+```java
+//java code. MovieList.java. 위에거임
+package com.example.samplemovie;
+
+public class MovieList {
+    MovieListResult boxOfficeResult;
+}
+
+//java code. MovieListResult.java. 위에거임
+package com.example.samplemovie;
+
+import java.util.ArrayList;
+
+public class MovieListResult {
+
+    String boxofficeType;
+    String showRange;
+
+    ArrayList<Movie> dailyBoxOfficeList = new ArrayList<Movie>();
+
+}
+
+//java code. Movie.java. 위에거임
+package com.example.samplemovie;
+
+public class Movie {
+
+    String rnum;
+    String rank;
+    String rankInten;
+    String rankOldAndNew;
+    String movieCd;
+    String movieNm;
+    String openDt;
+    String salesAmt;
+    String salesShare;
+    String salesInten;
+    String salesChange;
+    String salesAcc;
+    String audiCnt;
+    String audiInten;
+    String audiChange;
+    String audiAcc;
+    String scrnCnt;
+    String showCnt;
+
+}
+```
+
+```jsp
+<!-- xml code. movie_item.xml -->
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="152dp"
+                android:layout_height="52dp"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                app:srcCompat="@android:drawable/presence_video_busy" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:paddingTop="10dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="10dp">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="제목"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:text="관객수"
+                    android:textColor="#3F51B5" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</LinearLayout>
+
+```
+
+```java
+//java code. MovieAdapter.java
+package com.example.samplemovie;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+
+public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>  {
+    ArrayList<Movie> items = new ArrayList<Movie>();
+
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
+        View itemView = inflater.inflate(R.layout.movie_item, viewGroup, false);
+
+        return new ViewHolder(itemView);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {  //현재 인덱스에 맞는 Movie 객체를 찾아 뷰홀더에 객체 설정
+        Movie item = items.get(position);
+        viewHolder.setItem(item);
+    }
+
+    @Override
+    public int getItemCount() {
+        return items.size();
+    }
+
+    public void addItem(Movie item) {
+        items.add(item);
+    }
+
+    public void setItems(ArrayList<Movie> items) {
+        this.items = items;
+    }
+
+    public Movie getItem(int position) {
+        return items.get(position);
+    }
+
+    static class ViewHolder extends RecyclerView.ViewHolder {  //view홀더! 리스트 형태로 보일 때 각각의 아이템은 뷰홀더에 담는다.
+        TextView textView;
+        TextView textView2;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+
+            textView = itemView.findViewById(R.id.textView);
+            textView2 = itemView.findViewById(R.id.textView2);
+        }
+
+        public void setItem(Movie item) {  //Movie.java에 있는거 정의?
+            textView.setText(item.movieNm);
+            textView2.setText(item.audiCnt + " 명");
+        }
+
+    }
+
+}
+
+```
+
+```java
+//java code. MainActivity.java
+package com.example.samplemovie;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class MainActivity extends AppCompatActivity {
+    EditText editText;
+    TextView textView;
+
+    static RequestQueue requestQueue;  //요청 큐는 한 번만 만들어 계속 사용할 수 있기 때문에 static
+
+    RecyclerView recyclerView;
+    MovieAdapter adapter;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        editText = findViewById(R.id.editText);
+        textView = findViewById(R.id.textView);
+
+        editText.setText("https://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?key=d99a06c9812d36bff405995c0eea8b32&targetDt=20210330");
+
+        //여기는 사이트로 접속? Volley와 관련된거 설정
+        Button button = findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                makeRequest();
+            }
+        });
+
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(getApplicationContext());
+        }
+
+        //여기 아래는 리싸이클러뷰에 리스트 출력하는거 관련
+        recyclerView = findViewById(R.id.recyclerView);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);  //리싸이클러뷰 세로방향으로 리스트 볼 수 있도록 레이아웃 매니저 설정
+        recyclerView.setLayoutManager(layoutManager);
+
+        adapter = new MovieAdapter();  //이것과 아래(바로다음줄). MovieAdapter객체 만들고 setAdapter 메서드를 호출하여 설정했다. 이렇게 하면 리싸이클러뷰가 어댑터와 상호작용하면서 리스트로 보여줌
+        recyclerView.setAdapter(adapter);
+
+    }
+
+    //여기부터 아래는 사이트로 접속? Volley와 관련된거 설정
+    public void makeRequest() {
+        String url = editText.getText().toString();
+
+        StringRequest request = new StringRequest(  //요청객체. 요청객체를 만든 후 요청 큐에 넣어 요청 진행.
+                Request.Method.GET,
+                url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        println("응답 -> " + response);
+
+                        processResponse(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        println("에러 -> " + error.getMessage());
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> params = new HashMap<String,String>();
+
+                return params;
+            }
+        };
+
+        request.setShouldCache(false);
+        requestQueue.add(request);
+        println("요청 보냄.");
+    }
+
+    public void println(String data) {
+        Log.d("MainActivity", data);
+    }
+
+    public void processResponse(String response) {  //이 안에는 Gson을 이용해 JSON 문자열을 MovieList 객체로 변환하며 그 안에 들어있는 Movie 객체들을 하나씩 꺼내어 어댑터에 추가.
+        Gson gson = new Gson();
+        MovieList movieList = gson.fromJson(response, MovieList.class);
+
+        println("영화정보의 수 : " + movieList.boxOfficeResult.dailyBoxOfficeList.size());
+
+        for (int i = 0; i < movieList.boxOfficeResult.dailyBoxOfficeList.size(); i++) {
+            Movie movie = movieList.boxOfficeResult.dailyBoxOfficeList.get(i);
+
+            adapter.addItem(movie);
+        }
+
+        adapter.notifyDataSetChanged();  //어댑터에 모두 추가했을 떄 notifyDataSetChanged이걸 호출해야 변경사항 반영된다.
+    }
+}
+```
+
+```jsp
+<!-- build.graddle. Module -->
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    compileSdk 30
+
+    defaultConfig {
+        applicationId "com.example.samplemovie"
+        minSdk 21
+        targetSdk 30
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
+    implementation 'com.android.volley:volley:1.2.0'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    //이 부분 추가 / 웹으로 요청하고 응답을 받아. 리싸이클러뷰에 보여줄 것 / Volley는 웹으로 요청하고 응답을 받는 역할 / Gson은 JSON 문자열을 자바 객체로 바꾸어 주는 역할
+    implementation 'com.android.volley:volley:1.2.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
+}
+
+<!--AndroidManifest -->
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.samplemovie">
+
+    <uses-permission android:name="android.permission.INTERNET"/>  <!-- 인터넷을 사용하기 위해 INTERNET권한 추가, 아래 usesCleartextTraffic 이것도 추가 -->
+
+    <application
+        android:usesCleartextTraffic="true"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.SampleMovie">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
+
+```
+
+---
+
+### 데이터베이스와 table 만들기(로컬 데이터베이스)
+
+모든 폰은 데이터베이스인 SQLite를 기본적으로 가지고 있다.   
+
+> 입력, 수정, 삭제 같은 결과가 필요 없을때는 execSQL 사용하고   
+> -> public void execSQL(String Sql) throws SQLException ...   
+> select와 같이 조회에 따른 결과가 있는 SQL은 Cursor를 쓴다.   
+> -> public Cursor rawQuery(String Sql) throws SQLException... (p.491)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app33.jpg?raw=true)
+
+```jsp
+<!--xml code. activity_main.xml-->
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="데이터베이스만들기" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/editText2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="테이블 만들기" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
+```
+
+```java
+//java code. MainActivity.java
+package com.example.sampledatabase;
+
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    EditText editText;
+    EditText editText2;
+    TextView textView;
+
+    SQLiteDatabase database;
+
+    String tableName;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        editText = findViewById(R.id.editText);
+        editText2 = findViewById(R.id.editText2);
+        textView = findViewById(R.id.textView);
+
+        Button button = findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String databaseName = editText.getText().toString();
+                createDatabase(databaseName);
+            }
+        });
+
+        Button button2 = findViewById(R.id.button2);
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tableName = editText2.getText().toString();
+                createTable(tableName);
+
+                insertRecord();
+            }
+        });
+    }
+
+
+    private void createDatabase(String name) {
+        println("createDatabase 호출됨.");
+
+        database = openOrCreateDatabase(name, MODE_PRIVATE, null);  //1. 데이터베이스를 만들기 위한 메서드 실행하기
+
+        println("데이터베이스 생성함 : " + name);
+    }
+
+    private void createTable(String name) {
+        println("createTable 호출됨.");
+
+        if (database == null) {
+            println("데이터베이스를 먼저 생성하세요.");
+            return;
+        }
+
+        database.execSQL("create table if not exists " + name + "("  //2. 테이블을 만들기 위한 SQL문 실행하기
+                + " _id integer PRIMARY KEY autoincrement, "  //autoincrement는 자동으로 줄번호 부여. 결과적으로 내가 값을 넣을 필요 없음?
+                + " name text, "
+                + " age integer, "
+                + " mobile text)");
+
+        println("테이블 생성함 : " + name);
+    }
+
+    private void insertRecord() {
+        println("insertRecord 호출됨.");
+
+        if (database == null) {
+            println("데이터베이스를 먼저 생성하세요.");
+            return;
+        }
+
+        if (tableName == null) {
+            println("테이블을 먼저 생성하세요.");
+            return;
+        }
+
+        database.execSQL("insert into " + tableName
+                + "(name, age, mobile) "
+                + " values "
+                + "('John', 20, '010-1000-1000')");
+
+        println("레코드 추가함.");
+    }
+
+    public void println(String data) {
+        textView.append(data + "\n");
+    }
+
+}
+```
+
+---
+
+### 데이터베이스와 table 만들기, 조회하기(로컬 데이터베이스)
+
+> 데이터베이스와 table 만들기, 조회하기(로컬 데이터베이스) (p.500)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app33.jpg?raw=true)
+
+```jsp
+<!--xml code. activity_main.xml-->
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="데이터베이스만들기" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/editText2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="테이블 만들기" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="데이터 조회하기" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
+```
+
+```java
+//java code. MainActivity.java
+package com.example.sampledatabase;
+
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    EditText editText;
+    EditText editText2;
+    TextView textView;
+
+    SQLiteDatabase database;
+
+    String tableName;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        editText = findViewById(R.id.editText);
+        editText2 = findViewById(R.id.editText2);
+        textView = findViewById(R.id.textView);
+
+        Button button = findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String databaseName = editText.getText().toString();
+                createDatabase(databaseName);
+            }
+        });
+
+        Button button2 = findViewById(R.id.button2);
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tableName = editText2.getText().toString();
+                createTable(tableName);
+
+                insertRecord();
+            }
+        });
+
+        //조회하기 버튼 추가, 테이블 이름 emp로 고정했기때문에 조회할 때 두번째 input에 emp로 넣어야함!!!!!
+        Button button3 = findViewById(R.id.button3);
+        button3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                executeQuery();
+            }
+        });
+    }
+
+
+    private void createDatabase(String name) {
+        println("createDatabase 호출됨.");
+
+        database = openOrCreateDatabase(name, MODE_PRIVATE, null);  //1. 데이터베이스를 만들기 위한 메서드 실행하기
+
+        println("데이터베이스 생성함 : " + name);
+    }
+
+    private void createTable(String name) {
+        println("createTable 호출됨.");
+
+        if (database == null) {
+            println("데이터베이스를 먼저 생성하세요.");
+            return;
+        }
+
+        database.execSQL("create table if not exists " + name + "("  //2. 테이블을 만들기 위한 SQL문 실행하기
+                + " _id integer PRIMARY KEY autoincrement, "  //autoincrement는 자동으로 줄번호 부여. 결과적으로 내가 값을 넣을 필요 없음?
+                + " name text, "
+                + " age integer, "
+                + " mobile text)");
+
+        println("테이블 생성함 : " + name);
+    }
+
+    private void insertRecord() {
+        println("insertRecord 호출됨.");
+
+        if (database == null) {
+            println("데이터베이스를 먼저 생성하세요.");
+            return;
+        }
+
+        if (tableName == null) {
+            println("테이블을 먼저 생성하세요.");
+            return;
+        }
+
+        database.execSQL("insert into " + tableName
+                + "(name, age, mobile) "
+                + " values "
+                + "('John', 20, '010-1000-1000')");
+
+        println("레코드 추가함.");
+    }
+
+    public void println(String data) {
+        textView.append(data + "\n");
+    }
+
+    public void executeQuery() {
+        println("executeQuery 호출됨.");
+
+        Cursor cursor = database.rawQuery("select _id, name, age, mobile from emp", null);   //테이블 이름 emp로 고정!!!!!!!!! 조회시 테이블 이름 emp로 안하면 오류
+        int recordCount = cursor.getCount();
+        println("레코드 개수 : " + recordCount);
+
+        for (int i = 0; i < recordCount; i++) {
+            cursor.moveToNext();
+
+            int id = cursor.getInt(0);
+            String name = cursor.getString(1);
+            int age = cursor.getInt(2);
+            String mobile = cursor.getString(3);
+
+            println("레코드 #" + i + " : " + id + ", " + name + ", " + age + ", " + mobile);
+        }
+
+        cursor.close();
+    }
+
+}
+```
+
+---
+
+### 앱 화면에 웹브라우저 넣기(하이브리드앱)
+
+> 새로운 뷰 만들기? (p.367)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+
+```java
+//xml code. activity_main.xml
+
+```
+
+```java
+//java code. MainActivity.java
+```
+
+---
+
+### 앱 화면에 웹브라우저 넣기(하이브리드앱)
+
+> 새로운 뷰 만들기? (p.367)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+
+```java
+//xml code. activity_main.xml
+
+```
+
+```java
+//java code. MainActivity.java
+```
+
+---
+
+### 앱 화면에 웹브라우저 넣기(하이브리드앱)
+
+> 새로운 뷰 만들기? (p.367)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+
+```java
+//xml code. activity_main.xml
+
+```
+
+```java
+//java code. MainActivity.java
+```
+
+---
+
+### 앱 화면에 웹브라우저 넣기(하이브리드앱)
+
+> 새로운 뷰 만들기? (p.367)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+
+```java
+//xml code. activity_main.xml
+
+```
+
+```java
+//java code. MainActivity.java
+```
+
+---
+
+### 앱 화면에 웹브라우저 넣기(하이브리드앱)
+
+> 새로운 뷰 만들기? (p.367)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+
+```java
+//xml code. activity_main.xml
+
+```
+
+```java
+//java code. MainActivity.java
+```
+
+---
+
+### 앱 화면에 웹브라우저 넣기(하이브리드앱)
+
+> 새로운 뷰 만들기? (p.367)
+
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+
+```java
+//xml code. activity_main.xml
+
+```
+
+```java
+//java code. MainActivity.java
+```
+
+---
+
 ### 앱 화면에 웹브라우저 넣기(하이브리드앱)
 
 > 새로운 뷰 만들기? (p.367)
