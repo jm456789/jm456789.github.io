@@ -16,6 +16,8 @@ date: 2021-08-09
 last_modified_at: 2021-08-09
 ---
 
+---
+
 * JDK 1.8 버전 설치
 * STS(이클립스) 설치 및 프로젝트 생성
 * Tomcat 설치 및 연동
@@ -104,8 +106,8 @@ pom.xml 에서 아래같이 변경 후 프로젝트 우클릭 - maven - Update P
 
 업데이트 했으면 JRE System Library[JavaSE-1.8]로 변경된거 확인 가능.   
 
-작성된 프로젝트가 잘 되는지 보려면 프로젝트 우클릭 Run As - Run on Server
-새 창 크롬이 뜨면 성공
+작성된 프로젝트가 잘 되는지 보려면 프로젝트 우클릭 Run As - Run on Server     
+새 창 크롬이 뜨면 성공. 내용은 오류난다. colsole 보면 내용이 뭐가 나타나긴 함.
 
 ---
 
@@ -304,3 +306,424 @@ public class SampleHotel {
 프로젝트 우클릭 - 맨아래 Properties - JAVA Build Path - Libraries 탭에서 오른쪽 두번째 add External JARs 버튼 클릭 후 - c아래 SQL Developer안에 lib안에 ojdbc8파일 선택 - apply    
 
 바로 위에 Deployment Assembly로 이동해서 add버튼 - Java Build Path Entries 클릭 후 적용, Apply
+
+### JDBC 테스트 코드
+
+JDBC 제대로 연결됐나 확인 코드
+
+JDBCTests.java
+
+```java
+package org.zerock.persistence;
+
+import static org.junit.Assert.fail;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+
+import org.junit.Test;
+
+import lombok.extern.log4j.Log4j;
+
+@Log4j
+public class JDBCTests {
+	static {  //클래스 내의 데이터 초기화하는 키워드. static은 한번만 초기화
+		try {
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void testConnection() {  //실행은 testConnection더블클릭 - Run As - 2 JUnit
+		
+		//try-with-resources 문법이다. Autocloseable 인터페이스를 구현하는 클래스 기반...?
+		try(Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE", "c##jane", "1234")){  //성공적으로 Connection 될경우 나중에 자동으로 close해줌
+			log.info(con);
+		}catch(Exception e) {
+			fail(e.getMessage());  //fail은 Test(JUnit)에서 쓸 수 있는거?
+		}
+	}
+}
+
+```
+
+---
+
+# 커넥션 풀 설정
+
+일반적으로 여러 명의 사용자를 동시에 처리해야 하는 웹 애플리케이션의 경우 <u>데이터베이스 연결을 이용할 때는 커넥션풀을 이용</u>하므로, 아예 스프링에 커넥션 풀을 등록해서 사용하는것이 좋다.   
+커넥션 풀은 여러 종류가 있고 여기서는 최근 유행하는 HikariCP 사용.   
+
+구글에 maven hikaricp 검색해서 홈페이지 접속 후 가장 최근이면서 Usages가 많은 3.4.5버전 사용. 클릭해서 들어가면 소스 코드 나오니 복사해서 pom.xml에 붙여넣은 후 저장, 프로젝트 우클릭 - maven -  업데이트 프로젝트 해줘야함.   
+**pom.xml을 수정한 후에는 반드시 프로젝트 업데이트 해줘야 함!!!!!!!**
+
+```jsp
+<!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
+<dependency>
+    <groupId>com.zaxxer</groupId>
+    <artifactId>HikariCP</artifactId>
+    <version>3.4.5</version>
+</dependency>
+```
+
+### root-context.xml에 bean으로 등록
+
+**빈으로 등록해서 쓰려면 여기서 해야함!!!**
+
+```jsp
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+	
+	
+	<!-- 빈을 등록하려면 다 여기서 해야 함!!!! -->
+	
+	
+	<!-- hikari는 jar파일밖에 없어서 아래처럼 component 어노테이션 사용 못함. -->	
+	<bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"></property>
+		<property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521:XE"></property>
+		<property name="username" value="c##jane"></property>
+		<property name="password" value="1234"></property>
+	</bean>
+	
+	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+		<constructor-arg ref="hikariConfig"></constructor-arg>
+	</bean>
+	
+	
+	
+	<!-- 어노테이션(component)을 사용하여 패키지 안에 있는 모든 자바 파일을 bean으로 등록 -->
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<context:component-scan base-package="org.zerock.sample"></context:component-scan>
+	
+</beans>
+
+```
+
+### 빈으로 등록된 DataSource 이용해서 확인하는 테스트 코드
+
+DataSourceTests.java
+
+```java
+package org.zerock.persistence;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
+import java.sql.Connection;
+
+import javax.sql.DataSource;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.zerock.sample.SampleTests;
+
+import lombok.extern.log4j.Log4j;
+
+@RunWith(SpringJUnit4ClassRunner.class)  //스프링 실행
+@ContextConfiguration("file:src/main/webapp/WEB-INF/spring/root-context.xml")  //이 빈을 읽어라. (모든 빈을 만드는건 root-context.xml에 들어있음!)
+@Log4j
+public class DataSourceTests {
+	
+	@Autowired
+	private DataSource datasource;
+	
+	@Test
+	public void testConnection() {
+		try(Connection con = datasource.getConnection()){
+			log.info(con);
+		}catch(Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+}
+
+```
+
+---
+
+# MyBatis와 스프링 연동
+
+MyBatis는 흔히 SQL 매핑 프레임워크로 분류되는데, 개발자들은 JDBC 코드의 복잡하고 지루한 작업을 피하는 용도로 많이 사용한다.   
+SQL 질의문을 더 쉽게?   
+p.89 JDBC와의 차이점..
+
+### pom.xml에 라이브러리 추가
+
+```jsp
+<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
+<dependency>
+    <groupId>org.mybatis</groupId>
+    <artifactId>mybatis</artifactId>
+    <version>3.4.6</version>
+</dependency>
+        
+<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis-spring -->
+<dependency>
+    <groupId>org.mybatis</groupId>
+    <artifactId>mybatis-spring</artifactId>
+    <version>1.3.1</version>
+</dependency>
+
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-tx</artifactId>
+    <version>${org.springframework-version}</version>
+</dependency>
+
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-jdbc</artifactId>
+    <version>${org.springframework-version}</version>
+</dependency>
+```
+
+### root-context.xml로 빈 생성
+
+```jsp
+<!--위에꺼 hikari -->
+<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+    <constructor-arg ref="hikariConfig"></constructor-arg>
+</bean>
+<!--위에꺼 hikari -->
+
+<!-- 외부에서 제공받은 라이브러리. 코드는 없고 jar파일만 있기 때문에 component 사용 못한다. -->
+<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <property name="dataSource" ref="dataSource"></property>
+</bean>
+```
+
+### 빈으로 등록된 DataSource 이용해서 확인하는 테스트 코드
+
+DataSource.java
+
+```java
+package org.zerock.persistence;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
+import java.sql.Connection;
+
+import javax.sql.DataSource;
+
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.zerock.sample.SampleTests;
+
+import lombok.extern.log4j.Log4j;
+
+@RunWith(SpringJUnit4ClassRunner.class)  //스프링 실행
+@ContextConfiguration("file:src/main/webapp/WEB-INF/spring/root-context.xml")  //이 빈을 읽어라. (모든 빈을 만드는건 root-context.xml에 들어있음!)
+@Log4j
+public class DataSourceTests {
+	
+    //위에 썼던거.. 없어도 된다 hikari를 이용한 커넥션 풀 연결.
+	@Autowired
+	private DataSource datasource;
+	
+	@Test
+	public void testConnection() {
+		try(Connection con = datasource.getConnection()){
+			log.info(con);
+		}catch(Exception e) {
+			fail(e.getMessage());
+		}
+	}
+    //위에 썼던거.. 없어도 된다 hikari
+	
+
+    //SQLSession은 커넥션 역할, SQLSessionFactory는 SQLSession객체 생성해주는 역할
+	@Autowired
+	private SqlSessionFactory sqlSessionFactory;
+	
+	@Test
+	public void testMyBatis() {
+		try(SqlSession session = sqlSessionFactory.openSession(); Connection con = session.getConnection();){
+			log.info(session);
+			log.info(con);
+		}catch(Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+}
+
+```
+
+---
+
+# Mapper
+
+SQL과 그에 대한 처리를 지정하는 역할. MyBatis-Spring을 이용하는 경우에는 Mapper를 XML과 인터페이스+어노테이션의 형태로 작성할 수 있다.
+
+### Mapper 인터페이스
+
+Mapper를 작성하는 작업은 XML을 이용할 수 있지만, 이번에는 인터페이스 사용.
+
+TimeMapper.java (인터페이스)
+
+```java
+package org.zerock.mapper;
+
+import org.apache.ibatis.annotations.Select;
+
+public interface TimeMapper {
+	
+	@Select("SELECT sysdate FROM dual")
+	public String getTime();
+	
+}
+
+```
+
+### Mapper 설정
+
+root-context.xml에서 두번째 탭 Namespaces에서 mybatis-spring 체크박스 체크.
+
+```jsp
+<!--기존에 있는거-->
+<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <property name="dataSource" ref="dataSource"></property>
+</bean>
+<!--기존에 있는거-->
+
+<mybatis-spring:scan base-package="org.zerock.mapper"/> <!--추가!!-->
+
+<!--기존에 있는거-->
+<context:component-scan base-package="org.zerock.sample"></context:component-scan>
+<!--기존에 있는거-->
+```
+
+### Mapper 테스트 (자바를 이용하는 경우)
+
+TimeMapperTests.java
+
+```java
+package org.zerock.persistence;
+
+
+import javax.sql.DataSource;
+
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.zerock.mapper.TimeMapper;
+
+import lombok.extern.log4j.Log4j;
+
+@RunWith(SpringJUnit4ClassRunner.class)  //스프링 실행
+@ContextConfiguration("file:src/main/webapp/WEB-INF/spring/root-context.xml")  //이 빈을 읽어라. (모든 빈을 만드는건 root-context.xml에 들어있음!)
+@Log4j
+public class TimeMapperTests {
+	
+	@Autowired
+	private TimeMapper timeMapper;
+	
+	@Test
+	public void testGetTime() {
+		log.info(timeMapper.getClass().getName());
+		log.info(timeMapper.getTime());
+	}
+}
+
+```
+
+### XML 매퍼와 같이 쓰기
+
+TimeMapper 인터페이스
+
+```java
+package org.zerock.mapper;
+
+import org.apache.ibatis.annotations.Select;
+
+public interface TimeMapper {
+	
+	@Select("SELECT sysdate FROM dual")
+	public String getTime();
+	
+	public String getTime2();  //이거 추가
+}
+
+```
+
+TimeMapper.xml
+
+```jsp
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EM"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="org.zerock.mapper.TimeMapper">
+	
+	<select id="getTime2" resultType="String">
+	SELECT sysdate FROM dual
+	</select>
+	
+</mapper>
+```
+
+TimeMapperTests.java  ->  테스트 확인
+
+```java
+package org.zerock.persistence;
+
+
+import javax.sql.DataSource;
+
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.zerock.mapper.TimeMapper;
+
+import lombok.extern.log4j.Log4j;
+
+@RunWith(SpringJUnit4ClassRunner.class)  //스프링 실행
+@ContextConfiguration("file:src/main/webapp/WEB-INF/spring/root-context.xml")  //이 빈을 읽어라. (모든 빈을 만드는건 root-context.xml에 들어있음!)
+@Log4j
+public class TimeMapperTests {
+	
+	@Autowired
+	private TimeMapper timeMapper;
+	
+	@Test
+	public void testGetTime() {
+		log.info(timeMapper.getClass().getName());
+		log.info(timeMapper.getTime());
+	}
+	
+    //여기부분만 추가~~~ 위에는 앞에서 했던거.
+	@Test
+	public void testGetTime2() {
+		log.info("getTime2");
+		log.info(timeMapper.getTime2());
+	}
+}
+
+```
+
