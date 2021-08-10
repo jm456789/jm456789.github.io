@@ -20,9 +20,9 @@ last_modified_at: 2021-07-20
 
 ### sql plus
 
-id:system / pw:manager1
+id:system / pw:Manager1
 
-cnn system/manager1
+cnn system/Manager1
 
 create user c##jane identified by 1234;
 
