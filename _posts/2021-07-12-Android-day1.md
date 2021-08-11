@@ -4673,53 +4673,603 @@ public class MainActivity extends AppCompatActivity {
 
 ---
 
-### 앱 화면에 웹브라우저 넣기(하이브리드앱)
+### GPS로 위치 확인하기
 
-> 새로운 뷰 만들기? (p.367)
+> (p.617)
 
-![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app36.jpg?raw=true)
 
 ```java
-//xml code. activity_main.xml
+//xml code. build.gradle
+dependencies {
 
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    implementation 'com.yanzhenjie:permission:2.0.3'  /*이 줄만 추가 */
+}
+
+//xml code. AndroidManifest.xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.samplelocation">
+
+    /* 아래 두줄 추가. getLastKnownLocation메서드 권한 주기. 정교한위치와 대략적인 위치? */
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
+    <application
+
+//xml code. activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="내 위치"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="내 위치 확인하기"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
 ```
 
 ```java
 //java code. MainActivity.java
+package com.example.samplelocation;
+
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.yanzhenjie.permission.Action;
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.runtime.Permission;
+
+
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity {
+
+    TextView textView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        textView = findViewById(R.id.textView);
+
+        Button button = findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startLocationService();
+            }
+        });
+
+        //위험권한 자동으로 부여
+        AndPermission.with(this)
+                .runtime()
+                .permission(
+                        Permission.ACCESS_FINE_LOCATION,
+                        Permission.ACCESS_COARSE_LOCATION)
+                .onGranted(new Action<List<String>>() {
+                    @Override
+                    public void onAction(List<String> permissions) {
+                        showToast("허용된 권한 갯수 : " + permissions.size());
+                    }
+                })
+                .onDenied(new Action<List<String>>() {
+                    @Override
+                    public void onAction(List<String> permissions) {
+                        showToast("거부된 권한 갯수 : " + permissions.size());
+                    }
+                })
+                .start();
+
+    }
+
+    public void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
+    //위치관리자 객체 참조
+    public void startLocationService() {
+        LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        try {
+            //이부분은 안해도 됌?
+            Location location = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);  //getLastKnownLocation -> 마지막 위치값
+            if (location != null) {
+                double latitude = location.getLatitude();
+                double longitude = location.getLongitude();
+                String message = "최근 위치 -> Latitude : " + latitude + "\nLongitude:" + longitude;
+
+                textView.setText(message);
+            }
+
+            //위치 정보 업데이트 요청
+            GPSListener gpsListener = new GPSListener();
+            long minTime = 10000;
+            float minDistance = 0;
+
+            manager.requestLocationUpdates(  //위치 요청하기
+                    LocationManager.GPS_PROVIDER,
+                    minTime, minDistance, gpsListener);
+
+            Toast.makeText(getApplicationContext(), "내 위치확인 요청함",
+                    Toast.LENGTH_SHORT).show();
+
+        } catch(SecurityException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //위치 리스너 구현하기
+    class GPSListener implements LocationListener {
+        public void onLocationChanged(Location location) {  //위치가 확인되었을 때 자동으로 호출되는 메서드
+            Double latitude = location.getLatitude();
+            Double longitude = location.getLongitude();
+
+            String message = "내 위치 -> Latitude : "+ latitude + "\nLongitude:"+ longitude;
+            textView.setText(message);
+        }
+
+        public void onProviderDisabled(String provider) { }
+
+        public void onProviderEnabled(String provider) { }
+
+        public void onStatusChanged(String provider, int status, Bundle extras) { }
+    }
+}
 ```
 
 ---
 
-### 앱 화면에 웹브라우저 넣기(하이브리드앱)
+### 구글 맵 연동하여 지도에 표시
 
-> 새로운 뷰 만들기? (p.367)
+> (p.626)
 
-![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app37.jpg?raw=true)
 
 ```java
-//xml code. activity_main.xml
+//xml code. build.gradle
+dependencies {
 
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
+    implementation 'com.google.android.gms:play-services-maps:17.0.1'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    implementation 'com.yanzhenjie:permission:2.0.3'
+}
+
+//xml code. AndroidManifest.xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.samplelocation">
+
+    <!--아래 세줄 추가. API_KEY도 추가 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.SampleLocation">
+
+        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyB5-ocmJ_sdEEzsF3mtp5S2ci0fKP6IlWM"/>
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
+
+//xml code. activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="내 위치 확인하기"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <fragment
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        class="com.google.android.gms.maps.SupportMapFragment" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
 ```
 
 ```java
 //java code. MainActivity.java
+package com.example.samplelocation;
+
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.yanzhenjie.permission.Action;
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.runtime.Permission;
+
+
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity {
+
+    //구글 맵 보여주기위해 추가
+    SupportMapFragment mapFragment;
+    GoogleMap map;
+    MarkerOptions myLocationMarker;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        //구글 맵 보여주기위해 추가
+        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                Log.d("Map", "지도 준비됨.");
+                map = googleMap;
+
+            }
+        });
+        //구글 맵 보여주기위해 추가
+        try {
+            MapsInitializer.initialize(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Button button = findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startLocationService();
+            }
+        });
+
+        //위험권한 자동으로 부여
+        AndPermission.with(this)
+                .runtime()
+                .permission(
+                        Permission.ACCESS_FINE_LOCATION,
+                        Permission.ACCESS_COARSE_LOCATION)
+                .onGranted(new Action<List<String>>() {
+                    @Override
+                    public void onAction(List<String> permissions) {
+                        showToast("허용된 권한 갯수 : " + permissions.size());
+                    }
+                })
+                .onDenied(new Action<List<String>>() {
+                    @Override
+                    public void onAction(List<String> permissions) {
+                        showToast("거부된 권한 갯수 : " + permissions.size());
+                    }
+                })
+                .start();
+
+    }
+
+    public void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
+    //위치관리자 객체 참조
+    public void startLocationService() {
+        LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        try {
+            //이부분은 안해도 됌?
+            Location location = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);  //getLastKnownLocation -> 마지막 위치값
+            if (location != null) {
+                double latitude = location.getLatitude();
+                double longitude = location.getLongitude();
+                String message = "최근 위치 -> Latitude : " + latitude + "\nLongitude:" + longitude;
+
+                //구글 맵 보여주기위해 변경
+                Log.d("Map", message);
+            }
+
+            //위치 정보 업데이트 요청
+            GPSListener gpsListener = new GPSListener();
+            long minTime = 10000;
+            float minDistance = 0;
+
+            manager.requestLocationUpdates(  //위치 요청하기
+                    LocationManager.GPS_PROVIDER,
+                    minTime, minDistance, gpsListener);
+
+            Toast.makeText(getApplicationContext(), "내 위치확인 요청함",
+                    Toast.LENGTH_SHORT).show();
+
+        } catch(SecurityException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //위치 리스너 구현하기
+    class GPSListener implements LocationListener {
+        public void onLocationChanged(Location location) {  //위치가 확인되었을 때 자동으로 호출되는 메서드
+            Double latitude = location.getLatitude();
+            Double longitude = location.getLongitude();
+
+            String message = "내 위치 -> Latitude : "+ latitude + "\nLongitude:"+ longitude;
+            //구글 맵 보여주기위해 변경
+            Log.d("Map", message);
+            showCurrentLocation(latitude, longitude);
+        }
+
+        public void onProviderDisabled(String provider) { }
+
+        public void onProviderEnabled(String provider) { }
+
+        public void onStatusChanged(String provider, int status, Bundle extras) { }
+    }
+
+    //구글 맵 보여주기위해 추가
+    private void showCurrentLocation(Double latitude, Double longitude) {
+        LatLng curPoint = new LatLng(latitude, longitude);
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(curPoint, 15));
+
+        showMyLocationMarker(curPoint);
+    }
+    //구글 맵 보여주기위해 추가
+    private void showMyLocationMarker(LatLng curPoint) {
+        if (myLocationMarker == null) {
+            myLocationMarker = new MarkerOptions();
+            myLocationMarker.position(curPoint);
+            myLocationMarker.title("● 내 위치\n");
+            myLocationMarker.snippet("● GPS로 확인한 위치");
+            myLocationMarker.icon(BitmapDescriptorFactory.fromResource(R.drawable.mylocation));
+            map.addMarker(myLocationMarker);
+        } else {
+            myLocationMarker.position(curPoint);
+        }
+    }
+}
 ```
 
 ---
 
-### 앱 화면에 웹브라우저 넣기(하이브리드앱)
+### 상단 알림으로 알려주기(Notification)
 
-> 새로운 뷰 만들기? (p.367)
+> (p.655)
+> FLAG_ONE_SHOT : 생성된 PendingIntent를 한번만 사용
+> FLAG_UPDATE_CURRENT :  이미 생성된 PendingIntent가 있다면, Extra Data만 전달한다.
+> FLAG_CANCLE_CURRENT :  이미 생성된 PendingIntent를 취소한 후 새로 생성한다.
+> FLAG_NO_CREATE :   이미 생성된 PendingIntent가 없다면 null, 있다면 재활용
 
-![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app38.jpg?raw=true)
 
 ```java
 //xml code. activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
 
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="알림 띄우기"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="알림 띄우고 클릭하기"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
 ```
 
 ```java
 //java code. MainActivity.java
+package com.example.samplenoti;
+
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+
+public class MainActivity extends AppCompatActivity {
+    NotificationManager manager;
+
+    private static String CHANNEL_ID = "channel1";
+    private static String CHANNEL_NAME = "Channel1";
+
+    private static String CHANNEL_ID2 = "channel2";
+    private static String CHANNEL_NAME2 = "Channel2";
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        Button button = findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showNoti1();
+            }
+        });
+
+        Button button2 = findViewById(R.id.button2);
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showNoti2();
+            }
+        });
+
+    }
+
+    public void showNoti1() {
+        manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        NotificationCompat.Builder builder = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            manager.createNotificationChannel(new NotificationChannel(
+                    CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT
+            ));
+
+            builder = new NotificationCompat.Builder(this, CHANNEL_ID);
+        } else {
+            builder = new NotificationCompat.Builder(this);
+        }
+
+        builder.setContentTitle("간단 알림");
+        builder.setContentText("알림 메시지입니다.");
+        builder.setSmallIcon(android.R.drawable.ic_menu_view);
+        Notification noti = builder.build();
+
+        manager.notify(1, noti);  //상단 알림 띄우기
+    }
+
+    public void showNoti2() {
+        manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        NotificationCompat.Builder builder = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            manager.createNotificationChannel(new NotificationChannel(
+                    CHANNEL_ID2, CHANNEL_NAME2, NotificationManager.IMPORTANCE_DEFAULT
+            ));
+
+            builder = new NotificationCompat.Builder(this, CHANNEL_ID2);
+        } else {
+            builder = new NotificationCompat.Builder(this);
+        }
+
+        Intent intent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 101, intent, PendingIntent.FLAG_UPDATE_CURRENT);  //PadingIntent 객체 만들기
+
+        builder.setContentTitle("간단 알림");
+        builder.setContentText("알림 메시지입니다.");
+        builder.setSmallIcon(android.R.drawable.ic_menu_view);
+        builder.setAutoCancel(true);  //빌더에 PadingIntent 객체 설정하기
+        builder.setContentIntent(pendingIntent);
+
+        Notification noti = builder.build();
+
+        manager.notify(2, noti);  //상단 알림 띄우기
+
+        NotificationCompat.BigTextStyle style = new NotificationCompat.BigTextStyle();
+        style.bigText("많은 글자들입니다");
+        style.setBigContentTitle("제목입니다");
+        style.setSummaryText("요약 글입니다");
+
+        NotificationCompat.Builder builder2 = new NotificationCompat.Builder(this, "channel3")
+                .setContentTitle("알림 제목")
+                .setContentText("알림 내용")
+                .setSmallIcon(android.R.drawable.ic_menu_send)
+                .setStyle(style);
+
+    }
+
+}
 ```
 
 ---
