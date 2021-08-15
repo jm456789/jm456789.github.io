@@ -1,5 +1,5 @@
 ---
-layout: post 
+layout: post  
 
 title: "Spring 설치 및 기초"
 excerpt: ""
