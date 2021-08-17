@@ -1,5 +1,5 @@
 ---
-layout: post 
+layout: post       
 
 title: "Android "
 excerpt: ""
@@ -5274,119 +5274,530 @@ public class MainActivity extends AppCompatActivity {
 
 ---
 
-### 앱 화면에 웹브라우저 넣기(하이브리드앱)
+### 푸시 서비스(구글 FCM, APP SERVER). 클라이언트쪽. 받는쪽? 아래랑 연결
 
-> 새로운 뷰 만들기? (p.367)
+> 구글의 클라우드 서버를 사용해 메세지 전송 방식을 최적화한 서비스. 앱에서 서버로 직접 연결할 필요가 없으며 단말의 내부 연결을 공유하여 메세지 수신
+> 1. 단말은 자신을 클라우드 서버에 등록하고 서버로부터 등록 id 받음
+> 2. 등록 id(A)는 APP Server로 메시지 전송
+> 3. 보내려는 메세지는 App Server에서 google FCM으로 전송
+> 4. google FCM은 대상단말(B)에게 메세지 전송
+>
+> (p. 663)
+> 푸시 시작 전 설정
+> Firebase에서 프로젝트 생성하여 google-service.json 파일을 받은 후 app 폴더 안에 저장
 
-![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images39.jpg?raw=true)
 
 ```java
-//xml code. activity_main.xml
+//푸시 이용하기위한 설정. build.gradle(Project:)///////////////////////////////////////
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:7.0.0"
 
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+
+        //아래 줄 추가
+        classpath 'com.google.gms:google-services:4.3.5'
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+//푸시 이용하기위한 설정. build.gradle(Module:)///////////////////////////////////////
+plugins {
+    id 'com.android.application'
+
+    //아래 추가
+    id 'com.google.gms.google-services'
+}
+
+android {
+    compileSdk 30
+
+    defaultConfig {
+        applicationId "com.example.samplepush"
+        minSdk 21
+        targetSdk 30
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    //아래 두줄 추가
+    implementation platform('com.google.firebase:firebase-bom:26.8.0')
+    implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.google.firebase:firebase-analytics'
+}
+//코끼리 꼭 눌러주기!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+//xml code. AndroidManifest.xml  아래 MyFirebaseMessagingService service 만들어 준 후 권한 설정?
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.samplepush">
+
+    <!-- 아래 줄 추가 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.SamplePush">
+        <service
+            android:name=".MyFirebaseMessagingService"
+            android:enabled="true"
+            android:exported="true"></service>
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- 아래 추가 -->
+        <service
+            android:name=".MyFirebaseMessagingService"
+            android:enabled="true"
+            android:exported="true"
+            android:stopWithTask="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+    </application>
+
+</manifest>
+
+
+//xml code. activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity" >
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="인스턴스 id 확인하기" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:textSize="30sp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:background="#CDDC39">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
 ```
 
 ```java
+//java code. MyFirebaseMessagingService.java service!!
+package com.example.samplepush;
+
+import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
+
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
+
+import java.util.Map;
+
+public class MyFirebaseMessagingService extends FirebaseMessagingService  {
+
+    private static final String TAG = "FMS";
+
+    public MyFirebaseMessagingService() {
+    }
+
+    @Override
+    public void onNewToken(String token) {  //새로운 토큰을 확인했을 때 호출되는 메서드
+        super.onNewToken(token);
+
+        Log.d(TAG, "onNewToken 호출됨 : " + token);
+    }
+
+    @Override  //푸시메세지를 받았을 때 그 내용을 확인한 후 액티비티쪽으로 보내는 메서드 호출
+    public void onMessageReceived(RemoteMessage remoteMessage) {  //새로운 메시지를 받았을 때 호출되는 메서드
+        Log.d(TAG, "onMessageReceived 호출됨.");
+
+        String from = remoteMessage.getFrom();
+        Map<String, String> data = remoteMessage.getData();  //내용물 가져오기
+        String contents = data.get("contents");  //내용 뽑기
+        Log.d(TAG, "from : " + from + ", contents : " + contents);
+
+        sendToActivity(getApplicationContext(), from, contents);
+    }
+
+    private void sendToActivity(Context context, String from, String contents) {  //액티비티쪽으로 데이터를 보내기 위해 인텐트 객체를 만들고 startActivity 메서드 호출
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra("from", from);
+        intent.putExtra("contents", contents);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        context.startActivity(intent);  //메세지를 받는 순간 화면 올라옴
+    }
+}
+
+
 //java code. MainActivity.java
+package com.example.samplepush;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
+
+public class MainActivity extends AppCompatActivity {
+
+    TextView textView;
+    TextView textView2;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        textView = findViewById(R.id.textView);
+        textView2 = findViewById(R.id.textView2);
+
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w("Main", "토큰 가져오는 데 실패함", task.getException());
+                            return;
+                        }
+
+                        String newToken = task.getResult();
+                        println("등록 id : " + newToken);
+                    }
+                });
+
+        Button button = findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String instanceId = FirebaseInstanceId.getInstance().getId();
+
+                println("확인된 인스턴스 id : " + instanceId);
+            }
+        });
+    }
+
+    public void println(String data) {
+        textView2.append(data + "\n");
+        Log.d("FMS", data);
+    }
+
+
+    @Override  //서비스로부터 인텐트를 받았을 때의 처리
+    protected void onNewIntent(Intent intent) {
+        println("onNewIntent 호출됨");
+        if (intent != null) {
+            processIntent(intent);
+        }
+
+        super.onNewIntent(intent);
+    }
+
+    private void processIntent(Intent intent) {
+        String from = intent.getStringExtra("from");
+        if (from == null) {
+            println("from is null.");
+            return;
+        }
+
+        String contents = intent.getStringExtra("contents");
+        println("DATA : " + from + ", " + contents);
+        textView.setText("[" + from + "]로부터 수신한 데이터 : " + contents);
+    }
+    }
+}
+
+
+
 ```
 
 ---
 
-### 앱 화면에 웹브라우저 넣기(하이브리드앱)
+### 푸시 서비스(구글 FCM, APP SERVER). 보내는쪽? 위랑 연결
 
-> 새로운 뷰 만들기? (p.367)
+> (p. 676)
 
-![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app40.jpg?raw=true)
 
 ```java
 //xml code. activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity" >
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="전송" />
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FFEB3B">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
+
+//build.gradle : Moudule
+dependencies {
+
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    //아래 추가
+    implementation 'com.android.volley:volley:1.2.0'
+}
 
 ```
 
 ```java
 //java code. MainActivity.java
-```
+package com.example.samplepushsend;
 
----
+import androidx.appcompat.app.AppCompatActivity;
 
-### 앱 화면에 웹브라우저 넣기(하이브리드앱)
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
-> 새로운 뷰 만들기? (p.367)
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 
-![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-```java
-//xml code. activity_main.xml
+import java.util.HashMap;
+import java.util.Map;
 
-```
+public class MainActivity extends AppCompatActivity {
+    EditText editText;
+    TextView textView;
 
-```java
-//java code. MainActivity.java
-```
+    static RequestQueue requestQueue;
+    static String regId = "fSyWD1CRRq-_gsuOgznYfe:APA91bHnH56IKXJ2gwECFDcxrqbGUIkQORaL613W_6lyGbsSrxgnkN7FUBqR0SDUHlOQ0XxJrtlaB9ROoQvWIkBTkUYRFyuqMTvS7ZDbLt7XJ8msZ_jz4VRjg1OZo_R4C2LsCUtYLj20";  //위에꺼 samplepush 프로젝트 실행하면 뜨는 id
 
----
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-### 앱 화면에 웹브라우저 넣기(하이브리드앱)
+        editText = findViewById(R.id.editText);
+        textView = findViewById(R.id.textView);
 
-> 새로운 뷰 만들기? (p.367)
+        Button button = findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String input = editText.getText().toString();
+                send(input);
+            }
+        });
 
-![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(getApplicationContext());
+        }
 
-```java
-//xml code. activity_main.xml
+    }
 
-```
+    public void send(String input) {
+        JSONObject requestData = new JSONObject();
 
-```java
-//java code. MainActivity.java
-```
+        try {
+            requestData.put("priority", "high");
 
----
+            JSONObject dataObj = new JSONObject();
 
-### 앱 화면에 웹브라우저 넣기(하이브리드앱)
+            dataObj.put("contents", input);
+            requestData.put("data", dataObj);
+            JSONArray idArray = new JSONArray();
 
-> 새로운 뷰 만들기? (p.367)
+            idArray.put(0, regId);
+            requestData.put("registration_ids", idArray);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        sendData(requestData, new SendResponseListener() {
 
-![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+            @Override
+            public void onRequestCompleted() {
+                println("onRequestCompleted() 호출됨.");
+            }
 
-```java
-//xml code. activity_main.xml
+            @Override
+            public void onRequestStarted() {
+                println("onRequestStarted() 호출됨.");
+            }
 
-```
+            @Override
+            public void onRequestWithError(VolleyError error) {
+                println("onRequestWithError() 호출됨.");
+            }
+        });
+    }
 
-```java
-//java code. MainActivity.java
-```
 
----
+    public interface SendResponseListener {
+        public void onRequestStarted();
+        public void onRequestCompleted();
+        public void onRequestWithError(VolleyError error);
+    }
 
-### 앱 화면에 웹브라우저 넣기(하이브리드앱)
+    public void sendData(JSONObject requestData, final SendResponseListener listener) {
+        JsonObjectRequest request = new JsonObjectRequest(
 
-> 새로운 뷰 만들기? (p.367)
+                Request.Method.POST, "https://fcm.googleapis.com/fcm/send", requestData, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                listener.onRequestCompleted();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                listener.onRequestWithError(error);
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                return params;
+            }
 
-![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", "key=AAAAhdPJKOE:APA91bGzwesWfKmBYbdMBV0KbjmKeUUacUt2VgjeEi71LhpHTUh0p4nydbCND3JDi0VzfRTH9Fj4T93uN-G1OY58E5S-tIHuurwNuU745_WXlMvvjENXBLB587g-KGmeXMz0pbbirC35");  //구글 파이어베이스 콘솔 서버 키 받은거
+                return headers;
+            }
 
-```java
-//xml code. activity_main.xml
+            @Override
+            public String getBodyContentType() {
+                return "application/json";
+            }
+        };
 
-```
+        request.setShouldCache(false);
+        listener.onRequestStarted();
+        requestQueue.add(request);
+    }
 
-```java
-//java code. MainActivity.java
-```
 
----
+    public void println(String data) {
+        textView.append(data + "\n");
+    }
 
-### 앱 화면에 웹브라우저 넣기(하이브리드앱)
-
-> 새로운 뷰 만들기? (p.367)
-
-![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/app26.jpg?raw=true)
-
-```java
-//xml code. activity_main.xml
-
-```
-
-```java
-//java code. MainActivity.java
+}
 ```
