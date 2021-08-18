@@ -1,5 +1,5 @@
 ---
-layout: post 
+layout: post  
 
 title: "Spring 04. ?.do 확장자 패턴 servlet파일을 이용, dispather"
 excerpt: ""
