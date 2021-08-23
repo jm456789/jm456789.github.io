@@ -16,7 +16,7 @@ date: 2021-08-23
 last_modified_at: 2021-08-23
 ---
 
-![](https://github.com/jm456789/jm456789.github.io/blob/main/_spring2.jpg?raw=true)
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_images/spring2.jpg?raw=true)
 
 # 프로젝트 생성 
 
@@ -418,7 +418,8 @@ public class JDBCTests {
 
 ### BoardVO.java
 
-VO 클래스 작성
+VO 클래스 작성. dto같은거임   
+@Data 어노테이션은 getter/setter, toString을 해줌
 
 ```java
 package org.zerock.domain;
@@ -442,6 +443,8 @@ public class BoardVO {
 ```
 
 ### BoardMapper 인터페이스
+
+어노테이션(@Select)으로 sql 손쉽게 처리함.
 
 ```java
 package org.zerock.mapper;
@@ -493,6 +496,10 @@ public class BoardMapperTest {
 ```
 
 ### BoardMapper.xml
+
+MyBatis는 SQL을 처리하는데 어노테이션이나 XML을 이용할 수 있다.   
+간단한 SQL이라면 어노테이션이 무난하지만, 복잡한 SQL문이면 유용하지 못함(코드 수정하고 다시 빌드해야해서 유지보수성이 떨어짐)   
+XML인 경우 단순 텍스트 수정으로 끝남.
 
 Mapper XML 파일 p.187   
 BoardMapper.xml 파일 만든 후, BoardMapper 인터페이스에서 @Select문 주석처리해버리고, BoardMapperTest.java에서 실행 되나 다시 확인
