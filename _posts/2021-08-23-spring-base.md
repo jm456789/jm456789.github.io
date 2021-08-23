@@ -284,7 +284,7 @@ commit;
 
 ### root-context.xml
 
-두번째 탭 Namespaces에서 mybatis 체크!
+**두번째 탭 Namespaces에서 mybatis 체크!**
 
 ```jsp
 <!-- 추가 -->
