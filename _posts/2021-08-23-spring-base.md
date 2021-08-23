@@ -16,6 +16,8 @@ date: 2021-08-23
 last_modified_at: 2021-08-23
 ---
 
+![](https://github.com/jm456789/jm456789.github.io/blob/main/_spring2.jpg?raw=true)
+
 # 프로젝트 생성 
 
 new - Spring Legacy Project - Spring MVC Project 클릭 후 - next 클릭 - 패키지명 org.zerock.controller.. 걍암거나
@@ -342,14 +344,27 @@ import lombok.extern.log4j.Log4j;
 public class DataSourceTest {
 	
 	@Autowired
-	private DataSource dataSource;
+	private DataSource datasource;
 	
 	@Test
-	public void testConn() {
-		try (Connection con = dataSource.getConnection()){
+	public void testConnection() {
+		try(Connection con = datasource.getConnection()){
 			log.info(con);
-		}catch (Exception e){
-	         fail(e.getMessage());
+		}catch(Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	@Autowired
+	private SqlSessionFactory sqlSessionFactory;
+	
+	@Test
+	public void testMyBatis() {
+		try(SqlSession session = sqlSessionFactory.openSession(); Connection con = session.getConnection();){
+			log.info(session);
+			log.info(con);
+		}catch(Exception e) {
+			fail(e.getMessage());
 		}
 	}
 	
