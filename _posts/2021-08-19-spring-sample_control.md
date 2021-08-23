@@ -619,3 +619,60 @@ req02
 </body>
 </html>
 ```
+
+---
+
+# 파일 업로드 p.149
+
+### pom.xml
+
+```jsp
+<!-- ★★★★★★★★★★★★★★★★추가 6. 파일 업로드★★★★★★★★★★★★★★★★ -->		
+<dependency>
+	<groupId>commons-fileupload</groupId>
+	<artifactId>commons-fileupload</artifactId>
+	<version>1.3.3</version>
+</dependency>
+```
+
+### servlet-context.xml
+
+``jsp
+<!-- 추가. 파일 업로드 관련 -->
+<beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	<beans:property name="defaultEncoding" value="utf-8" ></beans:property>
+	
+	<beans:property name="maxUploadSize" value="104857560" ></beans:property>
+	
+	<beans:property name="maxUploadSizePerFile" value="2097152" ></beans:property>
+	<beans:property name="uploadTempDir" value="file:/C:/upload/tmp" ></beans:property> <!-- 해당 폴더 만들어야 함! -->
+	<beans:property name="maxInMemorySize" value="10485756" ></beans:property>
+</beans:bean>
+```
+
+### exUpload.jsp
+
+```jsp
+<form action="/sample/exUploadPost" method="post" enctype="multipart/form-data">
+	<div><input type="file" name="files" /></div>
+	<div><input type="file" name="files" /></div>
+	<div><input type="file" name="files" /></div>
+	<div><input type="file" name="files" /></div>
+	<div><input type="file" name="files" /></div>
+	<div><input type="submit" /></div>
+</form>
+```
+
+### SampleController.java
+
+```java
+//파일 업로드--------------------------------------------------------------------------------------
+	@PostMapping("/exUploadPost")
+	public void exUploadPost(ArrayList<MultipartFile> files) {
+		files.forEach(file -> {
+			log.info("------------");
+			log.info("name : " + file.getOriginalFilename());
+			log.info("size : " + file.getSize());
+		});
+	}
+```
