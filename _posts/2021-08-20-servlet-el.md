@@ -1,7 +1,7 @@
 ---
 layout: post 
 
-title: "jsp&Servlet EL과 JSTL 기초 예제 "
+title: "jsp&Servlet EL과 JSTL 기초 예제 " 
 excerpt: ""
 
 categories:
