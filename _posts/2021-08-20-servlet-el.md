@@ -1,5 +1,5 @@
 ---
-layout: post 
+layout: post  
 
 title: "jsp&Servlet EL과 JSTL 기초 예제 " 
 excerpt: ""
