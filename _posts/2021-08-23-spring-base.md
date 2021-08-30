@@ -1,7 +1,7 @@
 ---
-layout: post   
+layout: post 
 
-title: "Spring 스프링 MVC 프로젝트의 기본 구성. 기본설정 / 데이터베이스 연결 / CRUD"
+title: "Spring 스프링 MVC 프로젝트의 기본 구성 1. - 기본설정 / 데이터베이스 연결 / 영속, 비즈니스계층의 CRUD"
 excerpt: ""
 
 categories:
@@ -243,47 +243,6 @@ new - Spring Legacy Project - Spring MVC Project 클릭 후 - next 클릭 - 패�
 
 ---
 
-# sql developer 테이블 생성
-
-시퀀스는 자동으로 넘버 생성. 1234...   
-
-regdate은 생성시간, updatedate는 최종 수정 시간   
-기본값으로 sysdate 지정해서 레코드가 생성된 시간은 자동으로 기록
-
-```jsp
-create sequence seq_board;
-
-create table tbl_board(
-bno number(10, 0),
-title varchar2(200) not null,
-content varchar2(2000) not null,
-writer varchar2(50) not null,
-regdate date default sysdate,
-updatedate date default sysdate
-);
-
-alter table tbl_board add constraint pk_board
-primary key(bno);
-
-commit;
-```
-
-**시퀀스 - 편집 - 캐시없음 해주기**
-
----
-
-### 더미 데이터 추가
-
-의미 없는 데이터를 더미데이터라고 한다
-
-```jsp
-insert into tbl_board(bno, title, content, writer) values (seq_board.nextval, '테스트 제목', '테스트 내용', 'user00');
-
-commit;
-```
-
----
-
 ### root-context.xml
 
 **두번째 탭 Namespaces에서 mybatis 체크!**
@@ -309,6 +268,8 @@ commit;
 
 ### log4jdbc.log4j2.properties 파일
 
+> 프로젝트  - src/main/resources에 생성, src/test/resources에도
+
 최상단 [File]클릭 => [New]클릭 => [Other]클릭 => [General] 선택 => [Untitled Text File]을 선택 후 [Finish] 버튼을 클릭
 
 ```jsp
@@ -320,6 +281,8 @@ log4jdbc.spylogdelegator.name=net.sf.log4jdbc.log.slf4j.Slf4jSpyLogDelegator
 # oracle 연결
 
 ### DataSourceTest.java
+
+> 프로젝트  - src/test/java - org.zerock.persistence 패키지 만든 후 생성
 
 ```java
 package org.zerock.persistence;
@@ -414,12 +377,67 @@ public class JDBCTests {
 
 ---
 
+##### 기본셋팅 후 DB 연결됐나 확인
+
+**JDBCTests.java - testConnection 더블클릭 후 우클릭 - Run AS - JUnit Test로 확인**
+
+<u>여기까지가 p.173 기본 셋팅~</u>
+
+---
+
+---
+
+---
+
+# sql developer 테이블 생성
+
+시퀀스는 자동으로 넘버 생성. 1234...   
+
+regdate은 생성시간, updatedate는 최종 수정 시간   
+기본값으로 sysdate 지정해서 레코드가 생성된 시간은 자동으로 기록
+
+```jsp
+create sequence seq_board;
+
+create table tbl_board(
+bno number(10, 0),
+title varchar2(200) not null,
+content varchar2(2000) not null,
+writer varchar2(50) not null,
+regdate date default sysdate,
+updatedate date default sysdate
+);
+
+alter table tbl_board add constraint pk_board
+primary key(bno);
+
+commit;
+```
+
+**시퀀스 - 편집 - 캐시없음 해주기**
+
+---
+
+### 더미 데이터 추가
+
+의미 없는 데이터를 더미데이터라고 한다
+
+```jsp
+insert into tbl_board(bno, title, content, writer) values (seq_board.nextval, '테스트 제목', '테스트 내용', 'user00');
+
+commit;
+```
+
+---
+
 # 8.1 영속 계층의 구현 준비
 
 ### BoardVO.java
 
 VO 클래스 작성. dto같은거임   
 @Data 어노테이션은 getter/setter, toString을 해줌
+
+> 프로젝트  - src/main/java - org.zerock.domain 패키지 만든 후 생성
 
 ```java
 package org.zerock.domain;
@@ -446,6 +464,8 @@ public class BoardVO {
 
 어노테이션(@Select)으로 sql 손쉽게 처리함.
 
+> 프로젝트  - src/main/java - org.zerock.mapper 패키지 만든 후 생성
+
 ```java
 package org.zerock.mapper;
 
@@ -466,6 +486,8 @@ public interface BoardMapper {
 
 위에꺼 잘 연결됐나 확인   
 확인해보는법은 testGetList 영역 더블클릭 후 우클릭 - Run As - 2 JUnit Test
+
+> 프로젝트  - src/test/java - org.zerock.mapper 패키지 만든 후 생성
 
 ```java
 package org.zerock.mapper;
@@ -503,6 +525,8 @@ XML인 경우 단순 텍스트 수정으로 끝남.
 
 Mapper XML 파일 p.187   
 BoardMapper.xml 파일 만든 후, BoardMapper 인터페이스에서 @Select문 주석처리해버리고, BoardMapperTest.java에서 실행 되나 다시 확인
+
+> 프로젝트  - src/main/resources - zerock(폴더 신규 생성) - mapper(폴더 신규 생성) - 안에 xml(BoardMapper) 생성
 
 ```jsp
 <?xml version="1.0" encoding="UTF-8"?>
@@ -548,6 +572,29 @@ public interface BoardMapper {
 
 ```
 
+### BoardMapper.xml
+
+```jsp
+<!-- 데이터 삽입 -->
+<insert id="insert">
+	insert into tbl_board(bno, title, content, writer)
+	values (seq_board.nextval, #{title}, #{content}, #{writer})
+</insert>
+
+<insert id="insertSelectKey">
+	<selectKey keyProperty="bno" order="BEFORE"
+		resultType="long">
+		select seq_board.nextval from dual
+	</selectKey>
+	
+	insert into tbl_board(bno, title, content, writer)
+	values(#{bno}, #{title}, #{content}, #{writer})
+</insert>
+<!-- //데이터 삽입 -->
+```
+
+---
+
 ### BoardMapperTest.java
 
 ```java
@@ -576,27 +623,6 @@ public interface BoardMapper {
 		
 		log.info(board);
 	}
-```
-
-### BoardMapper.xml
-
-```jsp
-<!-- 데이터 삽입 -->
-<insert id="insert">
-	insert into tbl_board(bno, title, content, writer)
-	values (seq_board.nextval, #{title}, #{content}, #{writer})
-</insert>
-
-<insert id="insertSelectKey">
-	<selectKey keyProperty="bno" order="BEFORE"
-		resultType="long">
-		select seq_board.nextval from dual
-	</selectKey>
-	
-	insert into tbl_board(bno, title, content, writer)
-	values(#{bno}, #{title}, #{content}, #{writer})
-</insert>
-<!-- //데이터 삽입 -->
 ```
 
 ---
