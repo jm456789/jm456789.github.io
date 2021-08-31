@@ -1,7 +1,7 @@
 ---
 layout: post 
 
-title: "Spring 스프링 MVC 프로젝트의 기본 구성 1. - 기본설정 / 데이터베이스 연결 / 영속, 비즈니스계층의 CRUD"
+title: "Spring 스프링 MVC 프로젝트의 기본 구성 / 0. 기본설정(데이터베이스 연결) / 1. 영속계층(Persistence)의 CRUD 구현"
 excerpt: ""
 
 categories:
@@ -526,7 +526,7 @@ XML인 경우 단순 텍스트 수정으로 끝남.
 Mapper XML 파일 p.187   
 BoardMapper.xml 파일 만든 후, BoardMapper 인터페이스에서 @Select문 주석처리해버리고, BoardMapperTest.java에서 실행 되나 다시 확인
 
-> 프로젝트  - src/main/resources - zerock(폴더 신규 생성) - mapper(폴더 신규 생성) - 안에 xml(BoardMapper) 생성
+> 프로젝트  - src/main/resources - org(폴더 신규 생성) - zerock(폴더 신규 생성) - mapper(폴더 신규 생성) - 안에 xml(BoardMapper) 생성
 
 ```jsp
 <?xml version="1.0" encoding="UTF-8"?>
