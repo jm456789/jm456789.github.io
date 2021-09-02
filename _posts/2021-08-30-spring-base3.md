@@ -1,5 +1,5 @@
 ---
-layout: post  
+layout: post 
 
 title: "Spring 스프링 MVC 프로젝트의 기본 구성 / 2. 비즈니스 계층의 CRUD 구현 / 3. 프레젠테이션(웹) 계층의 CRUD 구현"
 excerpt: ""
@@ -337,6 +337,9 @@ $("#regBtn").on("click", function(){
 
 ### get.jsp
 
+버튼에 onclick으로 직접 링크 처리한 경우와,   
+다양한 상황을 처리하기 위해 form태그를 이용해서 수정한 2가지 방법이 있음.
+
 ```jsp
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
@@ -399,6 +402,101 @@ $("#regBtn").on("click", function(){
 	    
 	</div>
 	<!-- /#page-wrapper -->
+
+<%@include file="../includes/footer.jsp" %>
+
+```
+
+```jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+    
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
+<%@include file="../includes/header.jsp" %>
+
+	<div class="row">
+	    <div class="col-lg-12">
+	        <h1 class="page-header">Board Read</h1>
+	    </div>
+	    <!-- /.col-lg-12 -->
+	</div>
+	<!-- /.row -->
+	
+	
+	<div class="row">
+	    <div class="col-lg-12">
+	        <div class="panel panel-default">
+	            <div class="panel-heading">
+	                Board Read Page
+	            </div>
+	            <!-- /.panel-heading -->
+	            <div class="panel-body">
+	            
+	            	<div class="form-group">
+	                    <label>Bno</label>
+	                    <input class="form-control" name="bno" value='<c:out value="${board.bno }" />' readonly="readonly">
+	                </div>
+	                
+	            	<div class="form-group">
+	                    <label>title</label>
+	                    <input class="form-control" name="title" value='<c:out value="${board.title }" />' readonly="readonly">
+	                </div>
+	                
+	                <div class="form-group">
+	                    <label>Text area</label>
+	                    <textarea class="form-control" rows="3" name="content" readonly="readonly"><c:out value="${board.content }" /></textarea>
+	                </div>
+	                
+	                <div class="form-group">
+	                    <label>Writer</label>
+	                    <input class="form-control" name="writer" value='<c:out value="${board.writer }" />' readonly="readonly">
+	                </div>
+	                
+	                <button data-oper='modify' class="btn btn-default">Modify</button>
+	                <button data-oper='list' class="btn btn-info">List</button>
+	                 
+					<form id='operForm' action="/board/modify" method="get">
+						<input type='hidden' id='bno' name='bno' value='<c:out value="${board.bno }"/>' >
+					</form>
+	                
+	            </div>
+	            <!-- /.panel-body -->
+	        </div>
+	        <!-- /.panel -->
+	    </div>
+	    <!-- /.col-lg-12 -->
+	</div>
+	<!-- /.row -->
+	    
+	</div>
+	<!-- /#page-wrapper -->
+	
+	
+	
+	
+<!-- 버튼에 따라서 동작하는 쿼리 -->
+<script type="text/javascript">
+	$(document).ready(function(){
+		
+		var operForm = $("#operForm");
+		
+		$("button[data-oper='modify']").on("click", function(e){			
+			operForm.attr("action", "/board/modify").submit();			
+		});
+		
+		$("button[data-oper='list']").on("click", function(e){			
+			operForm.find("#bno").remove();			
+			operForm.attr("action", "/board/list");			
+			operForm.submit();			
+		});
+		
+	});
+</script>
+	
+	
+	
 
 <%@include file="../includes/footer.jsp" %>
 
@@ -503,5 +601,123 @@ $(document).ready(function(){
 > views 폴더 - board 폴더 - get.jsp 복사해서 modify.jsp 생성
 
 ```jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+    
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
+<%@include file="../includes/header.jsp" %>
+
+	<div class="row">
+	    <div class="col-lg-12">
+	        <h1 class="page-header">Board Read</h1>
+	    </div>
+	    <!-- /.col-lg-12 -->
+	</div>
+	<!-- /.row -->
+	
+	
+	<div class="row">
+	    <div class="col-lg-12">
+	        <div class="panel panel-default">
+	            <div class="panel-heading">
+	                Board Read Page
+	            </div>
+	            <!-- /.panel-heading -->
+	            <div class="panel-body">
+	            
+		            <form role="form" action="/board/modify" method="post">
+		            
+		            	<div class="form-group">
+		                    <label>Bno</label>
+		                    <input class="form-control" name="bno" value='<c:out value="${board.bno }" />' readonly="readonly">
+		                </div>
+		                
+		            	<div class="form-group">
+		                    <label>title</label>
+		                    <input class="form-control" name="title" value='<c:out value="${board.title }" />'>
+		                </div>
+		                
+		                <div class="form-group">
+		                    <label>Text area</label>
+		                    <textarea class="form-control" rows="3" name="content"><c:out value="${board.content }" /></textarea>
+		                </div>
+		                
+		                <div class="form-group">
+		                    <label>Writer</label>
+		                    <input class="form-control" name="writer" value='<c:out value="${board.writer }" />' readonly="readonly">
+		                </div>
+		                
+		                <div class="form-group">
+		                    <label>RegDate</label>
+		                    <input class="form-control" name="regDate" value='<fmt:formatDate pattern="yyyy/MM/dd" value="${board.regdate }" />' readonly="readonly">
+		                </div>
+		                
+		                <div class="form-group">
+		                    <label>Update Date</label>
+		                    <input class="form-control" name="updateDate" value='<fmt:formatDate pattern="yyyy/MM/dd" value="${board.updateDate }" />' readonly="readonly">
+		                </div>
+		                
+		                <button type="submit" data-oper='modify' class="btn btn-default">Modify</button>
+                        <button type="submit" data-oper='remove' class="btn btn-danger">Remove</button>
+                        <button type="submit" data-oper='list' class="btn btn-info">List</button>
+		                 
+		             </form>
+	                
+	            </div>
+	            <!-- /.panel-body -->
+	        </div>
+	        <!-- /.panel -->
+	    </div>
+	    <!-- /.col-lg-12 -->
+	</div>
+	<!-- /.row -->
+	    
+	</div>
+	<!-- /#page-wrapper -->
+	
+	
+	
+	
+	
+<!-- 버튼에 따라서 동작하는 쿼리 -->
+<script type="text/javascript">
+	$(document).ready(function(){
+		
+		var formObj = $("form");
+		
+		$('button').on("click", function(e){
+			e.preventDefault();  //submit 기본 동작 막기
+			
+			//data-oper로 submit 직접 수행
+			var operation = $(this).data("oper");
+			
+			console.log(operation);
+			
+			if(operation === 'remove'){
+				formObj.attr("action", "/board/remove");
+			}else if(operation ==='list'){	
+				
+				//move to list
+				//self.location = "/board/list";
+				//return;
+				
+				formObj.attr("action", "/board/list").attr("method", "get");
+				formObj.empty();
+			}
+			
+			formObj.submit();  //modify일 때 그냥 submit
+			
+		});		
+	});
+</script>
+
+	
+	
+	
+
+<%@include file="../includes/footer.jsp" %>
+
 
 ```
