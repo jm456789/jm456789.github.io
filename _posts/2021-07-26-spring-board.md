@@ -1,7 +1,7 @@
 ---
 layout: post 
 
-title: "Spring 02. 게시판 만들기 전 단계"
+title: "Spring 02. 게시판 만들기 전 단계 / DAO, DTO를 이용하여 DB에 있는 정보 가져오기, DB에 insert 하기 / EL, JSTL"
 excerpt: ""
 
 categories:
