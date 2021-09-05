@@ -36,7 +36,7 @@ last_modified_at: 2021-08-09
 
 Path - 편집 - 새로만들기 - %JAVA_HOME%   
 
-설정 후 cmd c:w>에서 javac 입력 후 확인?
+설정 후 cmd c:w>에서 java -version 입력 후 확인?
 
 ---
 
