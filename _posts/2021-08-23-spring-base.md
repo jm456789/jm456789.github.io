@@ -1,5 +1,5 @@
 ---
-layout: post 
+layout: post  
 
 title: "Spring 스프링 MVC 프로젝트의 기본 구성 / 0. 기본설정(데이터베이스 연결) / 1. 영속계층(Persistence)의 CRUD 구현"
 excerpt: ""
