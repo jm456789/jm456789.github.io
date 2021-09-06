@@ -237,7 +237,7 @@ new - Spring Legacy Project - Spring MVC Project 클릭 후 - next 클릭 - 패�
 
 **프로젝트 우클릭 - maven - update project 꼭!!!**
 
-**프로젝트 우클릭 - properties - Java Build Path - Libraries 탭 - 오른쪽 두번째 버튼 Add External JARs... - c > sqldeveloper > lib > ojdbc8.jar**
+**프로젝트 우클릭 - properties - Java Build Path - Libraries 탭 - 오른쪽 두번째 버튼 Add External JARs... - c > sqldeveloper > jdbc > lib > ojdbc8.jar**
 
 **프로젝트 우클릭 - properties - Deployment Assembly - Add 버튼 - Java Build Path Entries - next 버튼 - ojdbc8.jar 파일 클릭 후 finish**
 
