@@ -1,7 +1,7 @@
 ---
 layout: post   
 
-title: "Spring 스프링 MVC 프로젝트의 기본 구성 / 4. 부트스트랩 사용해서 게시판 만들기"
+title: "Spring 스프링 MVC 프로젝트의 기본 구성 / 4. 부트스트랩 사용해서 게시판 만들기" 
 excerpt: ""
 
 categories:
