@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.zerock.mapper.MgMapper">
+   <select id="getList" resultType="org.zerock.domain.MemberVO">
+<![CDATA[
+select * from tbl_member order by e_id desc
+]]>
+   </select>
+
+   <insert id="insert">
+      insert into tbl_member(e_id, e_did, e_name, e_pid,
+      e_tell, e_tell2, e_tell3,
+      e_email, e_address, e_address2, e_address3,
+      e_birth, e_cell, e_cell2,
+      e_cell3 )
+      values (seq_member.nextval,
+      #{e_did}, #{e_name}, #{e_pid}, #{e_tell},
+      #{e_tell2}, #{e_tell3},
+      #{e_email}, #{e_address}, #{e_address2},
+      #{e_address3}, #{e_birth},
+      #{e_cell},#{e_cell2}, #{e_cell3})
+   </insert>
+
+   <insert id="insertSelectKey">
+      <selectKey keyProperty="e_id" order="BEFORE"
+         resultType="String">
+         select seq_member.nextval from dual
+      </selectKey>
+
+      insert all
+      into tbl_member(e_id, e_did, e_name, e_pid, e_tell, e_tell2,
+      e_tell3,
+      e_email, e_address, e_address2, e_address3, e_birth, e_cell,
+      e_cell2,
+      e_cell3 )
+      values (#{e_id}, #{e_did}, #{e_name}, #{e_pid},
+      #{e_tell}, #{e_tell2},
+      #{e_tell3}, #{e_email}, #{e_address},
+      #{e_address2}, #{e_address3},
+      #{e_birth}, #{e_cell},#{e_cell2},
+      #{e_cell3})
+      into tbl_member_auth (e_id, auth) values(#{e_id},
+      #{authList[0].auth})
+      select * from dual
+   </insert>
+   <!-- <insert id="insertAuth"> insert into tbl_member_auth(e_id, auth) values 
+      (#{e_id}, #{auth}) </insert> -->
+   <select id="read" resultType="org.zerock.domain.MemberVO">
+      select * from tbl_member where e_id
+      = #{e_id}
+   </select>
+   
+   <select id="readAuth" resultType="org.zerock.domain.AuthVO">
+      select * from tbl_member_auth
+      WHERE e_id = #{e_id}
+   </select>
+	<delete id="deleteAuth">
+   		delete from tbl_member_auth where e_id=#{e_id}
+   </delete>
+   <delete id="delete">
+      delete from tbl_member where e_id = #{e_id}
+   </delete>
+   
+   
+
+   <update id="update">
+      update tbl_member
+      set
+      e_name = #{e_name},
+      e_pid =
+      #{e_pid},
+      e_did = #{e_did},
+      e_email = #{e_email},
+      e_cell = #{e_cell},
+      e_cell2 = #{e_cell2},
+      e_cell3 = #{e_cell3},
+      e_tell = #{e_tell},
+      e_tell2 =
+      #{e_tell2},
+      e_tell3 = #{e_tell3},
+      e_address = #{e_address},
+      e_address2 =
+      #{e_address2},
+      e_address3 = #{e_address3},
+      e_birth = #{e_birth}
+      where
+      e_id = #{e_id}
+		
+   </update>
+   <update id="updateAuth">
+   update tbl_member_auth set auth=#{auth} where e_id=#{e_id}
+   </update>
+
+<!-- 검색 쿼리 -->
+  <sql id="criteria">
+	<trim prefix="(" suffix=") AND " prefixOverrides="OR">
+			<foreach item='type' collection="typeArr">
+				<trim prefix="OR">
+               <choose>
+                  <when test="type == 'I'.toString()">
+                     e_id like '%'||#{keyword}||'%'
+                  </when>
+                  <when test="type == 'N'.toString()">
+                     e_name like '%'||#{keyword}||'%'
+                  </when>
+                  <when test="type == 'D'.toString()">
+                     e_did like '%'||#{keyword}||'%'
+                  </when>
+                  <when test="type == 'P'.toString()">
+                     e_pid like '%'||#{keyword}||'%'
+                  </when>
+               </choose>
+            </trim>
+         </foreach>
+      </trim>
+   </sql> 
+   
+
+   
+   <select id="getListWithPaging"
+      resultType="org.zerock.domain.MemberVO"> 
+      <![CDATA[ 
+      select 
+       e_id, e_did, e_name, e_pid, e_tell, e_tell2, e_tell3, e_email, e_address, e_address2, e_address3, e_birth, e_cell, e_cell2, e_cell3 
+       from ( 
+      select /*+INDEX_DESC(tbl_member pk_mem) */ 
+      rownum rn, e_id, e_did, e_name, e_pid, e_tell, e_tell2, e_tell3, e_email, e_address, e_address2, e_address3, e_birth, e_cell, e_cell2, e_cell3
+      from tbl_member where   
+      ]]>
+	   <include refid="criteria"></include>
+  <![CDATA[    
+      rownum <= #{pageNum} * #{amount}
+      )
+  where rn > (#{pageNum} -1) * #{amount}   
+  ]]>
+   </select>
+
+   <select id="getTotalCount" resultType="int">
+      select count(*) from tbl_member 
+   </select>
+
+   <!-- SELECT mem.e_id, e_name, e_did, e_pid, e_tell, e_email, e_birth, e_address, 
+      e_cell, e_pass, dep FROM tbl_member AS mem LEFT OUTER JOIN tbl_department 
+      AS dep on mem.e_did = dep.d_id WHERE mem.e_did = #{d_id}; -->
+
+
+
+
+</mapper>

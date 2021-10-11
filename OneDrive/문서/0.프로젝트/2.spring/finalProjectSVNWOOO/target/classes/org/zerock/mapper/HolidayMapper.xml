@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.zerock.mapper.HolidayMapper"> <!-- namespace은 Mapper 인터페이스와 동일한 이름 -->
+
+
+<!-- 목록 *********************************************************************************************************************** -->
+
+<!-- 방법 1
+<resultMap type="org.zerock.domain.HolidayVO" id="holidayMap">
+    <id property="h_id" column="h_id"/>
+    <result property="h_id" column="h_id"/>
+    <result property="h_start" column="h_start"/>
+    <result property="h_end" column="h_end"/>
+    <result property="h_reason" column="h_reason"/>
+    <result property="h_title" column="h_title"/>
+    <result property="h_eid1" column="h_eid1"/>
+    <result property="h_sledding" column="h_sledding"/>
+    <result property="h_sledding2" column="h_sledding2"/>
+    <result property="h_eid2" column="h_eid2"/>
+    <result property="h_did" column="h_did"/>
+    <result property="h_date" column="h_date"/>
+    <result property="h_division" column="h_division"/>
+    <result property="e_id" column="e_id"/>
+    <collection property="memList" resultMap="memMap">
+    </collection> 
+ </resultMap>
+ 
+ <resultMap type="org.zerock.domain.MemberVO" id="memMap">
+   <result property="e_id" column="e_id"/>
+   <result property="e_name" column="e_name"/>
+ </resultMap>
+ 
+ <select id="getList" resultMap="holidayMap">
+	SELECT *
+	FROM tbl_holiday hol RIGHT OUTER JOIN tbl_member mem on hol.h_eid2 = mem.e_id
+	WHERE hol.h_eid2 = ${value} $아니면 #
+</select>  
+//방법 1 -->
+
+
+<!-- <select id="getList" resultType="org.zerock.domain.HolidayVO">
+	SELECT *
+	FROM tbl_holiday hol RIGHT OUTER JOIN tbl_member mem on hol.h_eid2 = mem.e_id
+	WHERE hol.h_eid2 = #{e_id}
+	
+	
+	<if test="holidaySelect != '' and holidaySelect != null">
+		<if test="holidaySelect == 'holWork'.toString()">
+			AND 
+		</if>
+	</if> 
+	
+</select> -->
+
+<select id="getList" resultType="org.zerock.domain.HolidayVO">
+	SELECT *
+	FROM tbl_holiday
+	WHERE h_eid2 = #{e_id}	
+	
+	
+	<if test="holidaySelect != '' and holidaySelect != null">
+		<if test="holidaySelect == 'hHuman'.toString()">
+			AND h_eid1 LIKE '%' || #{keyword} || '%'
+		</if>
+		<if test="holidaySelect == 'hWork'.toString()">
+			AND h_division LIKE '%' || #{keyword} || '%'
+		</if>
+		<if test="holidaySelect == 'hIng'.toString()">
+			AND h_sledding LIKE '%' || #{keyword} || '%'
+		</if>
+	</if> 
+	
+	order by h_id desc
+	
+</select>
+
+
+
+
+
+<!-- 등록 *********************************************************************************************************************** -->
+<insert id="insert">
+	insert into tbl_holiday(h_id, h_start, h_end, h_reason, h_title, h_eid1, h_sledding, h_sledding2, h_eid2 h_did, h_division, e_id) 
+	values (seq_holiday.nextval, #{h_start}, #{h_end}, #{h_reason}, #{h_title}, #{h_eid1}, #{h_sledding}, #{h_sledding2}, #{h_eid2}, #{h_did}, #{h_division}, #{e_id})
+
+</insert>
+
+<insert id="insertSelectKey">
+	<selectKey keyProperty="h_id" order="BEFORE"
+		resultType="long">
+		select seq_holiday.nextval from dual
+	</selectKey>
+	
+	insert into tbl_holiday(h_id, h_start, h_end, h_reason, h_title, h_eid1, h_sledding, h_sledding2, h_eid2, h_did, h_division) 
+	values (#{h_id}, #{h_start}, #{h_end}, #{h_reason}, #{h_title}, #{h_eid1}, #{h_sledding}, #{h_sledding2}, #{h_eid2}, #{h_did} ,#{h_division})
+
+</insert>
+
+<!-- 등록시 결재자 셀렉트 리스트 표출 -->
+<select id="sList" resultType="org.zerock.domain.MemberVO">
+	select *
+	from tbl_member
+</select>
+<!-- //등록 -->
+
+
+
+
+<!-- 조회 *********************************************************************************************************************** -->
+<select id="read" resultType="org.zerock.domain.HolidayVO">
+	select * 
+	from tbl_holiday 
+	where h_id = #{h_id}
+</select>
+<!-- //조회 -->
+
+
+
+<!-- 수정 *********************************************************************************************************************** -->
+<update id="update">
+	update tbl_holiday
+	set h_division = #{h_division},
+		h_eid1 = #{h_eid1},
+		h_start = #{h_start},
+		h_end = #{h_end},
+		h_title = #{h_title},
+		h_reason = #{h_reason}
+	where h_id = #{h_id}
+</update>
+<!-- //수정 -->
+
+
+
+<!-- 삭제 *********************************************************************************************************************** -->
+<delete id="delete">
+	delete 
+	from tbl_holiday 
+	where h_id = #{h_id}
+	<!-- and	h_eid2 = #{e_id} -->
+</delete>
+<!-- //삭제 -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- select 1?
+<resultMap type="org.zerock.domain.HolidayVO" id="memPosMap">
+    <id property="e_pid" column="e_pid"/>
+    <result property="e_pid" column="e_pid"/>
+    <collection property="positionList" resultMap="posMap">
+    </collection> 
+ </resultMap>
+ 
+ <resultMap type="org.zerock.domain.PositionVO" id="posMap">
+   <result property="p_id" column="p_id"/>
+   <result property="p_name" column="p_name"/>
+ </resultMap>
+ 
+<select id="getSelectList" resultMap="memPosMap">
+	SELECT *
+	FROM tbl_member mem LEFT OUTER JOIN tbl_position pos on mem.e_pid = pos.p_id
+</select>
+ -->
+
+<!-- select 2?
+<select id="getSelectList1111" resultType="org.zerock.domain.HolidayVO">
+	<![CDATA[  
+		select * 
+		from tbl_holiday
+		order by dept_id
+	]]>
+</select>
+//select? -->
+
+
+
+
+
+
+
+
+
+
+</mapper>
+	

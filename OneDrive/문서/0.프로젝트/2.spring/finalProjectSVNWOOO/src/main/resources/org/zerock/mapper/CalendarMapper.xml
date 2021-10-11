@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.zerock.mapper.CalendarMapper"> <!-- namespace은 Mapper 인터페이스와 동일한 이름 -->
+
+
+	
+	<!-- <select id="calendarList" resultType="org.zerock.domain.HolidayVO"> 
+		SELECT 
+			h_id, 
+			h_title, 
+			TO_char(h_start, 'YYYY-MM-DD"T"HH24:MI:SS') h_start, 
+			TO_char(h_end, 'YYYY-MM-DD"T"HH24:MI:SS') h_end
+		FROM tbl_holiday 
+	</select>  -->
+	
+	<!-- <select id="calendarList" resultType="org.zerock.domain.HolidayVO"> 
+		SELECT *
+		FROM tbl_holiday 
+	</select>  -->
+	
+	<select id="calendarList" resultType="org.zerock.domain.HolidayVO"> 
+		SELECT 
+			h_eid2, 
+			h_division,
+			h_start,
+			h_end,
+            h_sledding,
+            h_eid2 || ' ' || h_division AS title,
+			TO_CHAR(h_start, 'YYYY-MM-DD') AS start2, 
+			TO_CHAR(h_end, 'YYYY-MM-DD') AS end
+		FROM tbl_holiday
+        where h_sledding = '승인'
+        
+	</select> 
+
+
+
+
+
+
+</mapper>
+	

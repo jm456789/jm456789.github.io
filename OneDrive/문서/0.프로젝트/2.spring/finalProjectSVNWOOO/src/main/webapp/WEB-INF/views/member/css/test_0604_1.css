@@ -1,0 +1,10 @@
+table{border:1px solid #ccc; border-collapse:collapse;}
+table th{border:1px solid #ccc;}
+table td{border:1px solid #ccc;}
+
+/* input{border:1px solid #ccc;} */
+
+ul{list-style:none;}
+
+body{text-decoration:none; text-transform:uppercase; text-shadow:0 0 4px #ccc, 0 -5px 4px #ff3, 2px -10px 6px #fd3, -2px -15px 11px #f80, 2px -19px 18px #f20;
+white-space:pre-wrap; letter-spacing:0.2em; direction:ltr;}

@@ -1,0 +1,162 @@
+@charset "utf-8";
+
+@import url(font_face.css);
+    
+body{
+    background:#193d6a url(../images/bg_login.png) center center repeat;
+    background-size:120%;
+    font-family:'bonDL','본고딕',Gulim,'굴림',Dotum,'돋움',Sans-serif;
+    font-size: 0.75em;        
+    height:100vh;
+}
+body, body *{
+    padding: 0; 
+    margin: 0;
+    box-sizing: border-box;
+}
+input{
+    font-family:'bonDL','본고딕',Gulim,'굴림',Dotum,'돋움',Sans-serif;
+}
+.login_Area{
+    position:relative;
+    top:50%;    
+    margin:0 auto;
+    margin-top:-386px;
+    padding: 100px;
+    max-width: 550px;
+    background: #fff;
+    border-radius: 20px;
+    text-align: center;
+}
+.login_Area h1{
+    font-family:'bonDL','본고딕',Gulim,'굴림',Dotum,'돋움',Sans-serif; 
+    font-weight: 700;
+    font-size: 3.5em; 
+    color: #193d6a; 
+    margin-bottom: 40px;
+}    
+
+h1 .font-big{
+    font-size: 1.5em;
+}
+input.login_input{
+    background: rgba(25,61,106,0.1); 
+    border: 0; 
+    width: 100%; 
+    font-size: 1.2em; 
+    margin-bottom: 20px; 
+    border-radius: 5px; 
+    padding: 15px 10px;
+    color: #193d6a;
+}
+input.login_input::placeholder{
+    color: rgba(25,61,106,0.80); 
+    font-size: 1em; 
+}
+input.login_input:focus, input.login_input:active{outline:0;}
+
+.checks{position: relative; margin-bottom: 40px; text-align: left;} 
+.checks input[type="checkbox"]{ /* 실제 체크박스는 화면에서 숨김 */ 
+    position: absolute; 
+    width: 1px; 
+    height: 1px; 
+    padding: 0; 
+    margin: -1px; 
+    overflow: hidden; 
+    clip:rect(0,0,0,0); 
+    border: 0 } 
+
+.checks input[type="checkbox"] + label { 
+    display: inline-block; 
+    position: relative; 
+    cursor: pointer; 
+    -webkit-user-select: none; 
+    -moz-user-select: none; 
+    -ms-user-select: none; 
+    color: #193d6a;
+} 
+.checks input[type="checkbox"] + label:before { /* 가짜 체크박스 */ 
+    content: ' '; 
+    display: inline-block; 
+    width: 20px; /* 체크박스의 너비를 지정 */ 
+    height: 20px; /* 체크박스의 높이를 지정 */ 
+    margin: -2px 8px 0 0; 
+    text-align: center; 
+    vertical-align: middle; 
+    background: rgba(25,61,106,0.35); 
+    border: 0; 
+    border-radius : 3px; 
+}
+.checks input[type="checkbox"]:checked + label:before { /* 체크박스를 체크했을때 */ 
+    content: '';
+    color: #fff; 
+    background: url(../images/icon_check.png) no-repeat top 6px left 6px rgba(25,61,106,0.35); 
+    font-size: 13px;
+}
+.btn_login{
+    width: 100%;
+    display: block;
+    margin-bottom:17px;
+    border: 0;
+    background: #193d6a;
+    padding: 20px 0;
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #fff;
+    border-radius: 5px;
+    cursor:pointer;
+    text-decoration:none;
+}
+.btn_join{
+    width: 100%;
+    display: block;
+    background-color:#fff;
+    border:1px solid #193d6a;
+    padding: 20px 0;
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #193d6a;
+    border-radius: 5px;
+    cursor:pointer;
+    text-decoration:none;
+}
+.btn_login:focus, .btn_login:active, .btn_join:focus, .btn_join:active{outline:none;}
+
+.login_logo{
+    margin-top: 35px;
+}
+
+.login_logo img{
+    margin: 0 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

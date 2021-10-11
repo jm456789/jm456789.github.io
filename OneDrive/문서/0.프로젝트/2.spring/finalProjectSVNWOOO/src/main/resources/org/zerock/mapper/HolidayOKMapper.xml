@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.zerock.mapper.HolidayOKMapper"> <!-- namespace은 Mapper 인터페이스와 동일한 이름 -->
+
+
+
+
+
+
+<!-- 목록 *********************************************************************************************************************** -->
+
+<!-- 방법 1
+<resultMap type="org.zerock.domain.HolidayVO" id="holidayMap">
+    <id property="h_id" column="h_id"/>
+    <result property="h_id" column="h_id"/>
+    <result property="h_start" column="h_start"/>
+    <result property="h_end" column="h_end"/>
+    <result property="h_reason" column="h_reason"/>
+    <result property="h_title" column="h_title"/>
+    <result property="h_eid1" column="h_eid1"/>
+    <result property="h_sledding" column="h_sledding"/>
+    <result property="h_sledding2" column="h_sledding2"/>
+    <result property="h_eid2" column="h_eid2"/>
+    <result property="h_did" column="h_did"/>
+    <result property="h_date" column="h_date"/>
+    <result property="h_division" column="h_division"/>
+    <collection property="memList" resultMap="memMap">
+    </collection> 
+ </resultMap>
+ 
+ <resultMap type="org.zerock.domain.MemberVO" id="memMap">
+   <result property="e_id" column="e_id"/>
+   <result property="e_name" column="e_name"/>
+ </resultMap>
+ 
+<select id="getList" resultMap="holidayMap">
+	SELECT *
+	FROM tbl_holiday hol RIGHT OUTER JOIN tbl_member mem on hol.h_eid2 = mem.e_id
+	WHERE hol.h_eid2 = ${value} $아니면 #
+</select>
+//방법 1 -->
+
+<!-- <select id="getList" resultType="org.zerock.domain.HolidayVO">
+	SELECT *
+	FROM tbl_holiday hol RIGHT OUTER JOIN tbl_member mem on hol.h_eid2 = mem.e_id
+	WHERE hol.h_eid2 = #{e_id}
+	
+	
+	<if test="holidaySelect != '' and holidaySelect != null">
+		<if test="holidaySelect == 'holWork'.toString()">
+			AND 
+		</if>
+	</if> 
+	
+</select> -->
+
+<!-- <select id="getList" resultType="org.zerock.domain.HolidayVO" parameterType="org.zerock.domain.HolidayVO">
+	SELECT *
+	FROM tbl_holiday
+	WHERE h_eid1 = #{e_id}
+	order by h_id desc
+</select> -->
+
+<select id="getList" resultType="org.zerock.domain.HolidayVO">
+	SELECT *
+	FROM tbl_holiday
+	WHERE h_eid1 = #{e_id}
+	
+	
+	<if test="holidaySelect != '' and holidaySelect != null">
+		<if test="holidaySelect == 'hHuman'.toString()">
+			AND h_eid2 LIKE '%' || #{keyword} || '%'
+		</if>
+		<if test="holidaySelect == 'hWork'.toString()">
+			AND h_division LIKE '%' || #{keyword} || '%'
+		</if>
+		<if test="holidaySelect == 'hIng'.toString()">
+			AND h_sledding2 LIKE '%' || #{keyword} || '%'
+		</if>
+	</if> 
+	
+	order by h_id desc
+	
+</select>
+
+
+
+
+
+<!-- 조회 *********************************************************************************************************************** -->
+<!-- read -->
+<select id="read" resultType="org.zerock.domain.HolidayVO">
+	select * 
+	from tbl_holiday 
+	where h_id = #{h_id}
+</select>
+<!-- //read -->
+
+
+
+<!-- 조회 후 승인 *********************************************************************************************************************** -->
+<!-- update -->
+<update id="updateOK" parameterType="org.zerock.domain.HolidayVO">
+	update tbl_holiday
+	set h_sledding2 = #{h_sledding2}, 
+		h_sledding = #{h_sledding}
+	where h_id = #{h_id}
+	<!-- and h_eid2 = #{e_id} -->
+</update>
+<!-- //update -->
+
+
+
+</mapper>
+	

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.zerock.mapper.MessageSendMapper"> <!-- namespace은 Mapper 인터페이스와 동일한 이름 -->
+
+<!-- 등록 *********************************************************************************************************************** -->
+<insert id="insert">
+   insert into tbl_message(m_id, m_title, m_content, m_eid1, m_eid2) 
+   values (seq_message.nextval, #{m_title}, #{m_content},  #{m_eid1}, #{m_eid2})
+</insert>
+
+<insert id="insertSelectKey">
+   <selectKey keyProperty="m_id" order="BEFORE"
+      resultType="Long">
+      select seq_message.nextval from dual
+   </selectKey>
+   insert into tbl_message(m_id, m_title, m_content, m_eid1, m_eid2 ) 
+   values (#{m_id}, #{m_title}, #{m_content},  #{m_eid1}, #{m_eid2})
+</insert>
+
+
+<!-- 조회 *********************************************************************************************************************** -->
+<select id="read" resultType="org.zerock.domain.MessageVO">
+   select * from tbl_message where m_id = #{m_id}
+</select>
+<!-- //조회 -->
+<!-- 삭제 *********************************************************************************************************************** -->
+<delete id="delete">
+   delete from tbl_message where m_id = #{m_id}
+</delete>
+<!-- //삭제 -->
+
+
+<!-- select 1?
+<resultMap type="org.zerock.domain.HolidayVO" id="memPosMap">
+    <id property="e_pid" column="e_pid"/>
+    <result property="e_pid" column="e_pid"/>
+    <collection property="positionList" resultMap="posMap">
+    </collection> 
+ </resultMap>
+ 
+ <resultMap type="org.zerock.domain.PositionVO" id="posMap">
+   <result property="p_id" column="p_id"/>
+   <result property="p_name" column="p_name"/>
+ </resultMap>
+ 
+<select id="getSelectList" resultMap="memPosMap">
+   SELECT *
+   FROM tbl_member mem LEFT OUTER JOIN tbl_position pos on mem.e_pid = pos.p_id
+</select>
+ -->
+
+<!-- select 2?
+<select id="getSelectList1111" resultType="org.zerock.domain.HolidayVO">
+   <![CDATA[  
+      select * 
+      from tbl_holiday
+      order by dept_id
+   ]]>
+</select>
+//select? -->
+
+  <select id="getListWithPaging"
+      resultType="org.zerock.domain.MessageVO"> 
+      <![CDATA[ 
+      select 
+       m_id, m_title, m_content, m_time, m_eid1, m_eid2, m_sc
+       from ( 
+      select /*+INDEX_DESC(tbl_message pk_message) */ 
+      rownum rn, m_id, m_title, m_content, m_time, m_eid1, m_eid2, m_sc
+      from tbl_message 
+      where m_eid2=#{m_eid2} AND
+      ]]>
+     
+  <![CDATA[    
+      rownum <= #{pageNum} * #{amount}
+      )
+  where rn > (#{pageNum} -1) * #{amount}   
+  ]]>
+   </select>
+
+ <select id="getTotalCount" resultType="int">
+      select count(*) from tbl_message 
+
+   </select> 
+
+
+
+
+
+
+
+
+</mapper>
+   

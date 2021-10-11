@@ -1,0 +1,11 @@
+body{background-image:url(../images/test0603_1.png); background-size:cover;}
+body > div{padding:10px; width:300px; height:500px; border:1px solid rgba(219,219,221); background-color:#fff;}
+div div{padding:10px 20px 30px; background-color:rgba(248,248,248); border-bottom:5px solid rgba(253,187,49);}
+h1{margin-bottom:10px; font-family: 'Roboto Condensed', sans-serif; color:rgb(74,74,74); font-size:28px;}
+p{line-height:1.47;}
+b{color:rgba(253,187,49); margin-top:30px; font-size:18px;}
+ol{list-style-type:upper-roman; list-style-position:inside;}
+ul{list-style-image:url(../images/icon_list.png); list-style-position:outside;}
+
+.white{color:#fff;} 
+#opange{color:orange;}

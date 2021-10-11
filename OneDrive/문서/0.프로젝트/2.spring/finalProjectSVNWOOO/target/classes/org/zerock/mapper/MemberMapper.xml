@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.zerock.mapper.MemberMapper"> <!-- namespace은 Mapper 인터페이스와 동일한 이름 -->
+
+
+<!-- 테이블 조회 -->
+<select id="getList" resultType="org.zerock.domain.MemberVO"> <!-- id는 메서드의 이름과 일치 / resultType는 select 쿼리의 결과를 특정 클래스의 객체로 만들기 위해 설정 -->
+	<![CDATA[  
+		select * from tbl_member where e_name=#{e_name}
+	]]>
+</select> <!-- CDATA는 XML에서 부등호를 사용하기 위해 사용 -->
+<!-- //테이블 조회 -->
+
+
+
+<!-- read -->
+<!-- <select id="read" resultType="org.zerock.domain.MemberVO">
+	select * from tbl_employee where e_id = #{e_id}
+</select>
+ -->
+<!-- //read -->
+
+
+<resultMap type="org.zerock.domain.MemberVO" id="memberMap">
+    <id property="e_id" column="e_id"/>
+    <result property="e_id" column="e_id"/>
+    <result property="e_name" column="e_name"/>
+    <result property="e_did" column="e_did"/>
+    <result property="e_pid" column="e_pid"/>
+    <result property="e_tell" column="e_tell"/>
+    <result property="e_tell2" column="e_tell2"/>
+    <result property="e_tell3" column="e_tell3"/>
+    <result property="e_email" column="e_email"/>
+    <result property="e_birth" column="e_birth"/>
+    <result property="e_address" column="e_address"/>
+    <result property="e_address2" column="e_address2"/>
+    <result property="e_address3" column="e_address3"/>
+    <result property="e_cell" column="e_cell"/>
+    <result property="e_cell2" column="e_cell2"/>
+    <result property="e_cell3" column="e_cell3"/>
+    <result property="e_pass" column="e_pass"/>
+    <collection property="authList" resultMap="authMap">
+    </collection> 
+  </resultMap>
+  
+  <resultMap type="org.zerock.domain.AuthVO" id="authMap">
+    <result property="e_id" column="e_id"/>
+    <result property="auth" column="auth"/>
+  </resultMap>
+  
+	<select id="read" resultMap="memberMap">
+		SELECT mem.e_id, e_name, e_did, e_pid, e_tell, e_tell2, e_tell3, e_email, e_birth, e_address, e_address2, e_address3, e_cell, e_cell2, e_cell3, e_pass, auth
+		FROM tbl_member mem LEFT OUTER JOIN tbl_member_auth auth on mem.e_id = auth.e_id
+		WHERE mem.e_id = #{e_id}
+	</select>
+
+
+
+
+</mapper>
+	

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.zerock.mapper.RemoteMapper">
+	<resultMap type="org.zerock.domain.MemberVO" id="memberMap">
+		<id property="e_id" column="e_id" />
+		<result property="e_id" column="e_id" />
+		<result property="e_name" column="e_name" />
+		<result property="e_did" column="e_did" />
+		<result property="e_pid" column="e_pid" />
+		<result property="e_tell" column="e_tell" />
+		<result property="e_tell2" column="e_tell2" />
+		<result property="e_tell3" column="e_tell3" />
+		<result property="e_email" column="e_email" />
+		<result property="e_birth" column="e_birth" />
+		<result property="e_address" column="e_address" />
+		<result property="e_address2" column="e_address2" />
+		<result property="e_address3" column="e_address3" />
+		<result property="e_cell" column="e_cell" />
+		<result property="e_cell2" column="e_cell2" />
+		<result property="e_cell3" column="e_cell3" />
+		<result property="e_pass" column="e_pass" />
+		<collection property="authList" resultMap="authMap">
+		</collection>
+	</resultMap>
+
+	<resultMap type="org.zerock.domain.RemoteVO" id="remoteMap">
+		<result property="e_id" column="e_id" />
+		<result property="remoteIP" column="remoteIP" />
+		<result property="userId" column="userId" />
+		<result property="pwd" column="pwd" />
+	</resultMap>
+
+	<select id="read" resultMap="remoteMap">
+
+		<!-- SELECT mem.e_id, remoteIP, userId, pwd FROM remote mem LEFT OUTER 
+			JOIN tbl_member e_id on mem.e_id = e_id.e_id WHERE mem.e_id=#{e_id} !! -->
+		SELECT *
+		FROM remote
+		WHERE e_id = #{e_id}
+	</select>
+</mapper>

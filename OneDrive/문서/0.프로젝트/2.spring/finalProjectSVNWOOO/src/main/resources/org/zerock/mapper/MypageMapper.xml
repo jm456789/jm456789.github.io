@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.zerock.mapper.MypageMapper"> <!-- namespace은 Mapper 인터페이스와 동일한 이름 -->
+
+
+<!-- read -->
+<select id="read" resultType="org.zerock.domain.MemberVO">
+	select * from tbl_member where e_id = #{e_id}
+</select>
+
+<!-- get -->
+<select id="get" resultType="org.zerock.domain.MemberVO">
+	select * from tbl_member where e_name = #{e_name}
+</select>
+<select id="checkPw" resultType="int">
+	select count(*) from tbl_member where e_pw=#{e_pw}
+</select>
+
+<!-- //read -->
+	
+<!-- update -->
+<update id="memberUpdate">
+	update tbl_member
+	set e_pass= #{e_pass},
+	e_email = #{e_email},
+	e_address = #{e_address},
+	e_address2 = #{e_address2},
+	e_address3 = #{e_address3}, 
+	e_cell = #{e_cell},
+	e_cell2 = #{e_cell2},
+	e_cell3 = #{e_cell3},
+	e_tell = #{e_tell},
+	e_tell2 = #{e_tell2},
+	e_tell3 = #{e_tell3}		
+	where e_id = #{e_id}
+</update>
+<!-- //update -->
+
+
+
+</mapper>
+	

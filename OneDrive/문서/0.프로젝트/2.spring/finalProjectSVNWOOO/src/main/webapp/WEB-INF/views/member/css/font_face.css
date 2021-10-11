@@ -1,0 +1,47 @@
+@charset "utf-8";
+
+@font-face{
+	font-family:'bonL';
+	src:url('font/NotoSans-Light.eot'),
+    url('font/NotoSans-Light.eot?#iefix') format('embedded-opentype'),
+    url('font/NotoSans-Light.otf') format('opentype'),
+	url('font/NotoSans-Light.woff') format('woff'),
+	url('font/NotoSans-Light.woff2') format('woff'),
+    local(※);
+}
+@font-face{
+	font-family:'bonDL';
+	src:url('font/NotoSans-DemiLight.eot'),
+    url('font/NotoSans-DemiLight.eot?#iefix') format('embedded-opentype'),
+    url('font/NotoSans-DemiLight.otf') format('opentype'),
+	url('font/NotoSans-DemiLight.woff') format('woff'),
+	url('font/NotoSans-DemiLight.woff2') format('woff'),
+    local(※);
+}
+@font-face{
+	font-family:'bonR';
+	src:url('font/NotoSans-Regular.eot'),
+    url('font/NotoSans-Regular.eot?#iefix') format('embedded-opentype'),
+    url('font/NotoSans-Regular.otf') format('opentype'),
+	url('font/NotoSans-Regular.woff') format('woff'),
+	url('font/NotoSans-Regular.woff2') format('woff'),
+    local(※);
+}
+@font-face{
+	font-family:'bonM';
+	src:url('font/NotoSans-Medium.eot'),
+    url('font/NotoSans-Medium.eot?#iefix') format('embedded-opentype'),
+    url('font/NotoSans-Medium.otf') format('opentype'),
+	url('font/NotoSans-Medium.woff') format('woff'),
+	url('font/NotoSans-Medium.woff2') format('woff'),
+    local(※);
+}
+
+@font-face {
+ font-family: 'NanumSquare';
+ font-weight: 700;
+ src: url(font/NanumSquareB.eot);
+ src: url(font/NanumSquareB.eot?#iefix) format('embedded-opentype'),
+      url(font/NanumSquareB.woff) format('woff'),
+      url(font/NanumSquareB.ttf) format('truetype');
+}
