@@ -98,7 +98,7 @@ last_modified_at: 2021-10-20
 
 ### index.jsp
 
-``jsp
+```jsp
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
